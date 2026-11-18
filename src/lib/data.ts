@@ -113,7 +113,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showTranslation: true,
   method: 'MWL',
   madhab: 'shafii',
-  location: null,
+  // A sensible starting point so prayer times are visible before the user
+  // shares their own location; "Use my location" replaces it.
+  location: { lat: 21.4225, lon: 39.8262, label: 'Makkah' },
   vibrate: true,
 };
 
