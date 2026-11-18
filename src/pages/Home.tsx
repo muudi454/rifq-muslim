@@ -12,6 +12,8 @@ import {
   type PrayerKey,
 } from '../lib/prayer';
 import { formatHijri } from '../lib/qibla';
+import { locationTimeZone } from '../lib/location';
+import { DEVELOPER_CREDIT } from '../lib/credit';
 import {
   IconBeads,
   IconBook,
@@ -65,6 +67,8 @@ export default function HomePage() {
   const greeting =
     hour < 12 ? t('home.greetingMorning') : hour < 17 ? t('home.greetingAfternoon') : t('home.greetingEvening');
 
+  const timeZone = locationTimeZone(settings.location);
+
   const prayer = useMemo(() => {
     if (!settings.location) return null;
     const times = getPrayerTimes(
@@ -72,9 +76,10 @@ export default function HomePage() {
       { latitude: settings.location.lat, longitude: settings.location.lon },
       settings.method,
       settings.madhab,
+      timeZone,
     );
     return { times: times.times, next: nextPrayer(times.times, now) };
-  }, [now, settings.location, settings.method, settings.madhab]);
+  }, [now, settings.location, settings.method, settings.madhab, timeZone]);
 
   const dailyAyah = useMemo(() => {
     if (!quran) return null;
@@ -118,6 +123,15 @@ export default function HomePage() {
         </div>
       </header>
 
+      <div className="credit-line">
+        <span className="credit">
+          <span className="credit-mark" aria-hidden="true">
+            ✦
+          </span>
+          <span className="credit-gold">{DEVELOPER_CREDIT}</span>
+        </span>
+      </div>
+
       <section className="card prayer-hero">
         {prayer ? (
           <>
@@ -126,7 +140,7 @@ export default function HomePage() {
                 <p className="small muted">{t('home.nextPrayer')}</p>
                 <h2 className="row-title">{t(`prayer.${prayer.next.key}`)}</h2>
                 <p className="row-sub">
-                  {formatTime(prayer.next.at, lang)} · {settings.location?.label}
+                  {formatTime(prayer.next.at, lang, true, timeZone)} · {settings.location?.label}
                 </p>
               </div>
               <div className="countdown">{formatCountdown(prayer.next.remainingMs)}</div>
@@ -134,7 +148,7 @@ export default function HomePage() {
             <div className="chip-row">
               {(['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as PrayerKey[]).map((k) => (
                 <span key={k} className={`chip ${prayer.next.key === k ? 'chip-active' : ''}`}>
-                  {t(`prayer.${k}`)} · {formatTime(prayer.times[k], lang)}
+                  {t(`prayer.${k}`)} · {formatTime(prayer.times[k], lang, true, timeZone)}
                 </span>
               ))}
             </div>
@@ -145,9 +159,9 @@ export default function HomePage() {
         ) : (
           <>
             <h2 className="row-title">{t('home.nextPrayer')}</h2>
-            <p className="row-sub">{t('prayer.manualHint')}</p>
+            <p className="row-sub">{t('loc.choosePrompt')}</p>
             <Link to="/prayer" className="btn btn-primary btn-sm">
-              {t('prayer.useLocation')}
+              {t('loc.change')}
             </Link>
           </>
         )}

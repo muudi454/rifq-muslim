@@ -1,17 +1,23 @@
+import { useState } from 'react';
 import { Link } from '../lib/router';
 import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import { useAuth } from '../lib/auth';
 import { useInstall } from '../lib/install';
-import { CITY_PRESETS, METHODS } from '../lib/prayer';
+import { METHODS } from '../lib/prayer';
+import { locationDetail } from '../lib/location';
 import { DEFAULT_SETTINGS } from '../lib/data';
-import { IconBookmark, IconGlobe, IconMoon, IconUser } from '../components/Icons';
+import { APP_VERSION, DEVELOPER_CREDIT } from '../lib/credit';
+import { flagOf } from '../data/countryTypes';
+import LocationPicker from '../components/LocationPicker';
+import { IconBookmark, IconGlobe, IconInfo, IconMapPin, IconMoon, IconUser } from '../components/Icons';
 
 export default function SettingsPage() {
   const { t, lang, setLang } = useI18n();
   const { settings, updateSettings, toast, bookmarks, sessions } = useStore();
   const { user, cloud, signOut } = useAuth();
   const { available, installed, promptInstall, ios } = useInstall();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   return (
     <div className="page">
@@ -129,30 +135,23 @@ export default function SettingsPage() {
         </div>
         <label className="field">
           <span>{t('prayer.location')}</span>
-          <select
-            className="select"
-            value={settings.location?.label ?? ''}
-            onChange={(e) => {
-              const city = CITY_PRESETS.find((c) => c.name === e.target.value);
-              if (city) {
-                updateSettings({
-                  location: {
-                    lat: city.latitude,
-                    lon: city.longitude,
-                    label: lang === 'ar' ? city.nameAr : city.name,
-                  },
-                });
-              }
-            }}
-          >
-            <option value="">{t('prayer.useLocation')}</option>
-            {CITY_PRESETS.map((c) => (
-              <option key={c.name} value={c.name}>
-                {lang === 'ar' ? c.nameAr : c.name}
-              </option>
-            ))}
-          </select>
         </label>
+        <div className="lp-current" style={{ marginBottom: 12 }}>
+          <span className="lp-flag" aria-hidden="true">
+            {settings.location?.countryCode ? flagOf(settings.location.countryCode) : '📍'}
+          </span>
+          <div className="lp-current-main">
+            <p className="lp-current-label">
+              {settings.location ? settings.location.label : t('loc.none')}
+            </p>
+            <p className="lp-sub">
+              {settings.location ? locationDetail(settings.location) : t('loc.choosePrompt')}
+            </p>
+          </div>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={() => setPickerOpen(true)}>
+          <IconMapPin size={16} /> {t('loc.change')}
+        </button>
       </section>
 
       <section className="card">
@@ -214,8 +213,30 @@ export default function SettingsPage() {
       </section>
 
       <section className="card">
+        <h2 className="section-title">
+          <IconInfo size={16} /> {t('settings.about')}
+        </h2>
+        <div className="credit-hero">
+          <span className="credit-mark" aria-hidden="true">
+            ✦
+          </span>
+          <span className="credit-name">{DEVELOPER_CREDIT}</span>
+          <span className="credit-role">{t('credit.role')}</span>
+        </div>
+        <p className="row-sub" style={{ marginTop: 10 }}>
+          {t('app.name')} · {t('about.version')} {APP_VERSION}
+        </p>
+        <p className="row-sub">{t('about.freeText')}</p>
+        <Link to="/about" className="btn btn-ghost btn-sm">
+          {t('about.title')}
+        </Link>
+      </section>
+
+      <section className="card">
         <h2 className="section-title">{t('settings.version')}</h2>
-        <p className="row-sub">RIFQ Muslim 1.0.0</p>
+        <p className="row-sub">
+          {t('app.name')} {APP_VERSION}
+        </p>
         <button
           className="btn btn-ghost btn-sm"
           onClick={() => {
@@ -226,6 +247,8 @@ export default function SettingsPage() {
           {t('settings.reset')}
         </button>
       </section>
+
+      <LocationPicker open={pickerOpen} onClose={() => setPickerOpen(false)} />
     </div>
   );
 }

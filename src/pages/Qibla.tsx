@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import { distanceToKaaba, qiblaBearing } from '../lib/qibla';
-import { CITY_PRESETS } from '../lib/prayer';
+import { locationFromCoords } from '../lib/location';
+import LocationPicker from '../components/LocationPicker';
 import { IconCompass, IconInfo, IconMapPin } from '../components/Icons';
 
 type OrientationEventLike = DeviceOrientationEvent & { webkitCompassHeading?: number };
@@ -14,6 +15,7 @@ export default function QiblaPage() {
   const [needsPermission, setNeedsPermission] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const coords = settings.location;
   const bearing = useMemo(
@@ -76,7 +78,7 @@ export default function QiblaPage() {
   const useMyLocation = () => {
     setError(null);
     if (!('geolocation' in navigator)) {
-      setError(t('prayer.locationDenied'));
+      setError(t('loc.gpsUnavailable'));
       return;
     }
     setLocating(true);
@@ -84,13 +86,20 @@ export default function QiblaPage() {
       (pos) => {
         const lat = Number(pos.coords.latitude.toFixed(4));
         const lon = Number(pos.coords.longitude.toFixed(4));
-        updateSettings({ location: { lat, lon, label: `${lat}, ${lon}` } });
+        updateSettings({ location: locationFromCoords(lat, lon) });
         setLocating(false);
         toast(t('common.saved'));
       },
-      () => {
+      (err) => {
         setLocating(false);
-        setError(t('prayer.locationDenied'));
+        // Graceful degradation: denial/timeouts explain the manual alternative.
+        setError(
+          err.code === err.PERMISSION_DENIED
+            ? t('loc.gpsDenied')
+            : err.code === err.TIMEOUT
+              ? t('loc.gpsTimeout')
+              : t('loc.gpsUnavailable'),
+        );
       },
       { timeout: 12000, maximumAge: 600000 },
     );
@@ -120,31 +129,13 @@ export default function QiblaPage() {
           <button className="btn btn-primary" onClick={useMyLocation} disabled={locating}>
             {locating ? t('prayer.locating') : t('qibla.enable')}
           </button>
-          <label className="field" style={{ marginTop: 14 }}>
-            <span>{t('prayer.location')}</span>
-            <select
-              className="select"
-              defaultValue=""
-              onChange={(e) => {
-                const city = CITY_PRESETS.find((c) => c.name === e.target.value);
-                if (city)
-                  updateSettings({
-                    location: {
-                      lat: city.latitude,
-                      lon: city.longitude,
-                      label: lang === 'ar' ? city.nameAr : city.name,
-                    },
-                  });
-              }}
-            >
-              <option value="">{t('prayer.location')}</option>
-              {CITY_PRESETS.map((c) => (
-                <option key={c.name} value={c.name}>
-                  {lang === 'ar' ? c.nameAr : c.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <button
+            className="btn btn-ghost btn-block"
+            style={{ marginTop: 10 }}
+            onClick={() => setPickerOpen(true)}
+          >
+            <IconMapPin size={16} /> {t('loc.change')}
+          </button>
         </section>
       )}
 
@@ -209,11 +200,16 @@ export default function QiblaPage() {
             <p className="help">
               {coords.label} → {t('qibla.bearing')} {Math.round(bearing)}°
             </p>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPickerOpen(true)}>
+              <IconMapPin size={15} /> {t('loc.change')}
+            </button>
           </section>
         </>
       )}
 
       <p className="footer-note">{t('app.tagline')}</p>
+
+      <LocationPicker open={pickerOpen} onClose={() => setPickerOpen(false)} />
     </div>
   );
 }
