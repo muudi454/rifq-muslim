@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, RouterProvider, matchRoute, useRouter } from './lib/router';
 import { I18nProvider, useI18n } from './lib/i18n';
 import { AuthProvider, useAuth } from './lib/auth';
-import { StoreProvider } from './lib/store';
+import { StoreProvider, useStore } from './lib/store';
+import { startAthanScheduler } from './lib/athan';
+import { api, getDeviceId, devicePlatform } from './lib/api';
+import { APP_VERSION } from './lib/credit';
 import { InstallBanner } from './components/InstallBanner';
 import HomePage from './pages/Home';
 import QuranPage from './pages/Quran';
@@ -17,6 +20,10 @@ import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
 import AboutPage from './pages/About';
 import AuthPage from './pages/Auth';
+import NotificationsPage from './pages/Notifications';
+import ContactPage from './pages/Contact';
+import PrivacyPage from './pages/Privacy';
+import AdminPage from './pages/Admin';
 import {
   IconBeads,
   IconBook,
@@ -37,6 +44,67 @@ function Shell() {
   const { user } = useAuth();
   const { path } = useRouter();
   const [menu, setMenu] = useState(false);
+  const { settings, toast } = useStore();
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+  const langRef = useRef(lang);
+  langRef.current = lang;
+
+  // Athan scheduling uses the saved coordinates and calculation method.
+  useEffect(
+    () =>
+      startAthanScheduler({
+        getSettings: () => settingsRef.current,
+        onEvent: (event) => {
+          const label = event.prayer.charAt(0).toUpperCase() + event.prayer.slice(1);
+          if (event.kind === 'athan') {
+            toast(
+              langRef.current === 'ar'
+                ? `${label} — حان وقت الصلاة`
+                : `${label} — it is time for prayer`,
+            );
+          } else {
+            toast(
+              langRef.current === 'ar'
+                ? `تذكير: ${label} بعد قليل`
+                : `Reminder: ${label} is coming up`,
+            );
+          }
+        },
+      }),
+    [toast],
+  );
+
+  // Anonymous activity heartbeat + announcements from the app team.
+  useEffect(() => {
+    const deviceId = getDeviceId();
+    const loc = settingsRef.current.location as unknown as Record<string, unknown> | null;
+    const city = typeof loc?.city === 'string' ? loc.city : '';
+    const country = typeof loc?.country === 'string' ? loc.country : '';
+    api('/api/activity', {
+      method: 'POST',
+      json: {
+        deviceId,
+        platform: devicePlatform(),
+        lang: langRef.current,
+        appVersion: APP_VERSION,
+        locationLabel: [city, country].filter(Boolean).join(', ') || undefined,
+      },
+    }).catch(() => undefined);
+
+    const since = Number(localStorage.getItem('rifq.announcements.since') || 0);
+    api<{ announcements?: { title: string }[] }>(
+      `/api/announcements?deviceId=${encodeURIComponent(deviceId)}&since=${since}`,
+    )
+      .then((data) => {
+        const list = data.announcements || [];
+        if (!list.length) return;
+        const latest = list[list.length - 1];
+        toast(`📣 ${latest.title}`);
+        localStorage.setItem('rifq.announcements.since', String(Date.now()));
+      })
+      .catch(() => undefined);
+  }, [toast]);
 
   const surahMatch = matchRoute('/quran/:n', path);
   const surah = surahMatch ? Number(surahMatch.n) : undefined;
@@ -54,7 +122,11 @@ function Shell() {
     { to: '/hadith', label: t('nav.hadith'), icon: <IconInfo size={20} /> },
     { to: '/calendar', label: t('nav.calendar'), icon: <IconCalendar size={20} /> },
     { to: '/bookmarks', label: t('nav.bookmarks'), icon: <IconBookmark size={20} /> },
+    { to: '/notifications', label: t('nav.notifications'), icon: <IconMoon size={20} /> },
+    { to: '/contact', label: t('nav.contact'), icon: <IconGlobe size={20} /> },
     { to: '/settings', label: t('nav.settings'), icon: <IconSettings size={20} /> },
+    { to: '/privacy', label: t('nav.privacy'), icon: <IconInfo size={20} /> },
+    { to: '/admin', label: t('nav.admin'), icon: <IconUser size={20} /> },
     { to: user ? '/profile' : '/auth/signin', label: t('auth.profile'), icon: <IconUser size={20} /> },
   ];
 
@@ -69,6 +141,10 @@ function Shell() {
     if (path === '/calendar') return <CalendarPage />;
     if (path === '/bookmarks') return <BookmarksPage />;
     if (path === '/settings') return <SettingsPage />;
+    if (path === '/notifications') return <NotificationsPage />;
+    if (path === '/contact') return <ContactPage />;
+    if (path === '/privacy') return <PrivacyPage />;
+    if (path === '/admin') return <AdminPage />;
     if (path === '/about') return <AboutPage />;
     if (path === '/profile') return <ProfilePage />;
     if (path === '/auth/signin') return <AuthPage mode="signin" />;

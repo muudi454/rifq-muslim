@@ -1,5 +1,5 @@
-/* RIFQ Muslim service worker — offline shell + bundled Islamic data. */
-const VERSION = 'rifq-v1';
+/* RIFQ Muslim service worker — offline shell, bundled data, push notifications. */
+const VERSION = 'rifq-v2';
 const SHELL_CACHE = `${VERSION}-shell`;
 const DATA_CACHE = `${VERSION}-data`;
 
@@ -38,6 +38,53 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+/* ---------------------------------------------------------------- push */
+
+self.addEventListener('push', (event) => {
+  let payload = { title: 'RIFQ Muslim', body: '', url: '/' };
+  try {
+    if (event.data) {
+      const parsed = event.data.json();
+      payload = {
+        title: parsed.title || payload.title,
+        body: parsed.body || '',
+        url: parsed.url || '/',
+      };
+    }
+  } catch {
+    if (event.data) payload.body = event.data.text();
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      data: { url: payload.url },
+      tag: 'rifq-push',
+      renotify: false,
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const client of clientList) {
+        if ('focus' in client) {
+          await client.focus();
+          if ('navigate' in client) await client.navigate(target).catch(() => undefined);
+          return;
+        }
+      }
+      if (self.clients.openWindow) await self.clients.openWindow(target);
+    })(),
+  );
+});
+
 function isSupabase(url) {
   return url.hostname.endsWith('.supabase.co');
 }
@@ -48,6 +95,8 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (isSupabase(url) || url.pathname.startsWith('/auth/')) return;
+  // Never cache API responses: admin data and activity must stay live.
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return;
 
   // Navigations: network first, fall back to cached shell for offline use.
   if (request.mode === 'navigate') {
