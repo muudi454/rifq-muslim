@@ -349,6 +349,28 @@ const dict: Record<string, Entry> = {
 
   // ── Worldwide location ───────────────────────────────────────────
   'loc.title': ['Choose your location', 'اختر موقعك'],
+  'loc.unavailable': ['Location unavailable', 'الموقع غير متاح'],
+  'loc.unavailableHint': [
+    'We could not read your GPS position. Choose your city manually to get accurate prayer times for where you are.',
+    'تعذّر قراءة موقعك عبر GPS. اختر مدينتك يدويًا للحصول على أوقات صلاة دقيقة لموقعك.',
+  ],
+  'loc.chooseCity': ['Choose your city', 'اختر مدينتك'],
+  'loc.autoOn': ['Detected automatically (GPS)', 'محدَّد تلقائيًا (GPS)'],
+  'loc.manualOn': ['City chosen manually', 'مدينة مختارة يدويًا'],
+  'loc.enableAuto': ['Use automatic detection', 'استخدم التحديد التلقائي'],
+  'loc.retryDetect': ['Detect my city again', 'حدّد مدينتي مرة أخرى'],
+  'loc.detectingCity': ['Detecting your city…', 'جارٍ تحديد مدينتك…'],
+  'loc.autoMethod': ['Automatic method for my country', 'طريقة تلقائية حسب دولتي'],
+  'loc.autoMethodHint': [
+    'Chosen from the authority used in your country. You can change it at any time.',
+    'تُختار حسب الجهة المعتمدة في دولتك. يمكنك تغييرها في أي وقت.',
+  ],
+  'loc.permissionBlocked': [
+    'Location permission is blocked. Allow it in your browser settings, or choose your city manually.',
+    'إذن الموقع محظور. اسمح به من إعدادات المتصفح أو اختر مدينتك يدويًا.',
+  ],
+  'loc.useDetected': ['Use detected city', 'استخدم المدينة المكتشفة'],
+  'loc.movedTo': ['Location updated to', 'تم تحديث الموقع إلى'],
   'loc.coverage': [
     '{countries} countries · {cities} cities and regions · works offline',
     '{countries} دولة · {cities} مدينة ومنطقة · يعمل دون اتصال',

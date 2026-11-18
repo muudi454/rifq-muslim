@@ -134,6 +134,10 @@ export interface UserSettings {
   /** Cap applied to Fajr/Isha where the sun never reaches the angle. */
   highLatitude: 'none' | 'middle' | 'seventh' | 'angle';
   location: UserLocation | null;
+  /** Follow the regional calculation method for the detected country. */
+  methodAuto: boolean;
+  /** 'auto' keeps GPS detection running; 'manual' pins the city the user chose. */
+  locationMode: 'auto' | 'manual';
   vibrate: boolean;
   athan: AthanSettings;
 }
@@ -148,6 +152,10 @@ export const DEFAULT_SETTINGS: UserSettings = {
   // No country is ever assumed. The user chooses their own place (GPS, city
   // search or manual coordinates) the first time they need prayer times.
   location: null,
+  // The calculation method follows the detected country until the user picks
+  // one themselves; location detection is automatic unless a city is pinned.
+  methodAuto: true,
+  locationMode: 'auto',
   vibrate: true,
   athan: DEFAULT_ATHAN,
 };
@@ -164,6 +172,8 @@ export function mergeSettings(saved: Partial<UserSettings> | null | undefined): 
     highLatitude: HIGH_LATITUDE_VALUES.includes(base.highLatitude as string)
       ? (base.highLatitude as UserSettings['highLatitude'])
       : DEFAULT_SETTINGS.highLatitude,
+    methodAuto: base.methodAuto !== false,
+    locationMode: base.locationMode === 'manual' ? 'manual' : 'auto',
     athan: {
       ...DEFAULT_ATHAN,
       ...(athan || {}),

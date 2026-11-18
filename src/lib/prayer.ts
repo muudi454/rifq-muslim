@@ -121,6 +121,53 @@ export function methodById(id: string | undefined): MethodDef {
 }
 
 /**
+ * Regional calculation method per ISO 3166-1 alpha-2 country code.
+ *
+ * Only countries with an authority that matches one of the methods above are
+ * listed; every other country falls back to the Muslim World League, which is
+ * the most widely used global standard. This is a *default*: the user can pick
+ * any method in Settings, and doing so sets `methodAuto` to false.
+ */
+export const REGIONAL_METHODS: Record<string, string> = {
+  SA: 'UMM_AL_QURA',
+  YE: 'UMM_AL_QURA',
+  BH: 'UMM_AL_QURA',
+  AE: 'DUBAI',
+  QA: 'QATAR',
+  KW: 'KUWAIT',
+  EG: 'EGYPT',
+  SD: 'EGYPT',
+  SY: 'EGYPT',
+  LY: 'EGYPT',
+  TR: 'TURKEY',
+  PK: 'KARACHI',
+  IN: 'KARACHI',
+  BD: 'KARACHI',
+  AF: 'KARACHI',
+  LK: 'KARACHI',
+  NP: 'KARACHI',
+  MV: 'KARACHI',
+  SG: 'SINGAPORE',
+  MY: 'SINGAPORE',
+  ID: 'SINGAPORE',
+  BN: 'SINGAPORE',
+  US: 'ISNA',
+  CA: 'ISNA',
+  MX: 'ISNA',
+  GB: 'MOONSIGHTING',
+  IE: 'MOONSIGHTING',
+  IR: 'TEHRAN',
+};
+
+/** Regional default for a country code; MWL when unknown or not listed. */
+export function autoMethodForCountry(countryCode: string | null | undefined): string {
+  const code = (countryCode || '').trim().toUpperCase();
+  if (!code) return DEFAULT_METHOD;
+  const method = REGIONAL_METHODS[code];
+  return method && METHODS.some((m) => m.id === method) ? method : DEFAULT_METHOD;
+}
+
+/**
  * Share of the night (in hours) that Fajr and Isha may not exceed.
  * Returned as a cap measured from sunrise (Fajr) and sunset (Isha).
  */

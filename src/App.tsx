@@ -3,6 +3,7 @@ import { Link, RouterProvider, matchRoute, useRouter } from './lib/router';
 import { I18nProvider, useI18n } from './lib/i18n';
 import { AuthProvider, useAuth } from './lib/auth';
 import { StoreProvider, useStore } from './lib/store';
+import { AutoLocationProvider } from './lib/autoLocation';
 import { startAthanScheduler } from './lib/athan';
 import { api, getDeviceId, devicePlatform } from './lib/api';
 import { APP_VERSION } from './lib/credit';
@@ -275,7 +276,9 @@ export default function App() {
       <RouterProvider>
         <AuthProvider>
           <StoreProvider>
-            <Shell />
+            <AutoLocationProvider>
+              <Shell />
+            </AutoLocationProvider>
           </StoreProvider>
         </AuthProvider>
       </RouterProvider>
