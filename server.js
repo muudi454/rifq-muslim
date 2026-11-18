@@ -40,8 +40,14 @@ if (!fs.existsSync(DIST)) {
   );
   app.use(express.static(DIST, { index: false, maxAge: '1h' }));
 
-  // Single-page-app fallback.
-  app.get('/*splat', (_req, res) => {
+  // Single-page-app fallback, including the root path.
+  app.get('/', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(DIST, 'index.html'));
+  });
+
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(DIST, 'index.html'));
   });
