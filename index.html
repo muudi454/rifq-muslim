@@ -18,20 +18,126 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="apple-touch-startup-image" href="/icons/splash-1170x2532.png" />
     <style>
-      /* Branded splash while the app boots. Disappears the moment React mounts. */
+      /*
+        RIFQ Muslim launch screen.
+        Painted from this HTML document before the JS bundle is parsed, so the
+        first frame is already emerald + gold with the crescent and app name.
+        main.tsx fades it out once React has mounted. The emerald background
+        matches the manifest background_color, so the hand-off from the
+        Android splash screen to the app has no white flash.
+      */
+      :root {
+        color-scheme: light;
+      }
       html,
       body {
         margin: 0;
-        background: #fbf9f3;
+        background: #065f46;
       }
       #root:empty {
         min-height: 100vh;
       }
-      #root:empty::after {
-        content: '';
+      #launch-splash {
         position: fixed;
         inset: 0;
-        background: #065f46 url('/icons/icon-512.png') center / 168px no-repeat;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 34%, #0b7a5a 0%, #065f46 56%, #043d2d 100%);
+        color: #fbf9f3;
+        font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        transition: opacity 0.45s ease, visibility 0.45s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      #launch-splash.is-hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .splash-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 24px;
+        text-align: center;
+        animation: splash-rise 0.6s ease-out both;
+      }
+      .splash-mark {
+        width: 96px;
+        height: 96px;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+      }
+      .splash-name {
+        margin: 4px 0 0;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: #f3d99b;
+      }
+      .splash-ar {
+        font-family: 'Amiri', 'Segoe UI', serif;
+        font-size: 22px;
+        color: #fbf9f3;
+        direction: rtl;
+      }
+      .splash-rule {
+        width: 56px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #c9a24a, transparent);
+      }
+      .splash-tag {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #cfe9de;
+      }
+      .splash-credit {
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: #d8b45f;
+      }
+      .splash-bar {
+        width: 132px;
+        height: 3px;
+        margin-top: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+      }
+      .splash-bar span {
+        display: block;
+        width: 40%;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #c9a24a, #f3d99b);
+        animation: splash-slide 1.15s ease-in-out infinite;
+      }
+      @keyframes splash-slide {
+        0% {
+          transform: translateX(-120%);
+        }
+        100% {
+          transform: translateX(320%);
+        }
+      }
+      @keyframes splash-rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash-inner {
+          animation: none;
+        }
+        .splash-bar span {
+          animation: none;
+          width: 100%;
+        }
       }
     </style>
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -46,6 +152,35 @@
     />
   </head>
   <body>
+    <div id="launch-splash" role="status" aria-live="polite" aria-label="RIFQ Muslim is starting">
+      <div class="splash-inner">
+        <svg class="splash-mark" viewBox="0 0 96 96" role="img" aria-label="RIFQ Muslim crescent">
+          <defs>
+            <linearGradient id="splash-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f3d99b" />
+              <stop offset="55%" stop-color="#d4af61" />
+              <stop offset="100%" stop-color="#b98f2e" />
+            </linearGradient>
+            <mask id="splash-crescent">
+              <rect width="96" height="96" fill="black" />
+              <circle cx="46" cy="50" r="30" fill="white" />
+              <circle cx="61" cy="43" r="26" fill="black" />
+            </mask>
+          </defs>
+          <circle cx="46" cy="50" r="30" fill="url(#splash-gold)" mask="url(#splash-crescent)" />
+          <path
+            d="M70 24l2.6 6.1 6.1 2.6-6.1 2.6L70 41.4l-2.6-6.1-6.1-2.6 6.1-2.6z"
+            fill="url(#splash-gold)"
+          />
+        </svg>
+        <p class="splash-name">RIFQ Muslim</p>
+        <p class="splash-ar">رِفْق مسلم</p>
+        <div class="splash-rule"></div>
+        <p class="splash-tag">Your Faith, Your Daily Companion</p>
+        <div class="splash-bar"><span></span></div>
+        <p class="splash-credit">Made by Eng Mohamud Yusuf</p>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
