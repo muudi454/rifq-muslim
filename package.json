@@ -13,6 +13,7 @@
     "start": "node server.js",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
+    "check:prayer": "tsx scripts/check-prayer.ts",
     "data:quran": "node scripts/fetch-quran.mjs",
     "data:hadith": "node scripts/fetch-hadith.mjs"
   },

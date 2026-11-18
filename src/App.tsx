@@ -22,6 +22,7 @@ import AboutPage from './pages/About';
 import AuthPage from './pages/Auth';
 import NotificationsPage from './pages/Notifications';
 import ContactPage from './pages/Contact';
+import InvitePage from './pages/Invite';
 import PrivacyPage from './pages/Privacy';
 import AdminPage from './pages/Admin';
 import NotFoundPage from './pages/NotFound';
@@ -126,6 +127,7 @@ function Shell() {
     { to: '/bookmarks', label: t('nav.bookmarks'), icon: <IconBookmark size={20} /> },
     { to: '/notifications', label: t('nav.notifications'), icon: <IconMoon size={20} /> },
     { to: '/contact', label: t('nav.contact'), icon: <IconGlobe size={20} /> },
+    { to: '/invite', label: t('nav.invite'), icon: <IconGlobe size={20} /> },
     { to: '/settings', label: t('nav.settings'), icon: <IconSettings size={20} /> },
     { to: '/about', label: t('nav.about'), icon: <IconInfo size={20} /> },
     { to: '/privacy', label: t('nav.privacy'), icon: <IconInfo size={20} /> },
@@ -152,6 +154,7 @@ function Shell() {
     if (path === '/settings') return <SettingsPage />;
     if (path === '/notifications') return <NotificationsPage />;
     if (path === '/contact') return <ContactPage />;
+    if (path === '/invite') return <InvitePage />;
     if (path === '/privacy') return <PrivacyPage />;
     if (path === '/admin') return <AdminPage />;
     if (path === '/about') return <AboutPage />;
