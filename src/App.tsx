@@ -15,6 +15,7 @@ import CalendarPage from './pages/Calendar';
 import BookmarksPage from './pages/Bookmarks';
 import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
+import AboutPage from './pages/About';
 import AuthPage from './pages/Auth';
 import {
   IconBeads,
@@ -68,6 +69,7 @@ function Shell() {
     if (path === '/calendar') return <CalendarPage />;
     if (path === '/bookmarks') return <BookmarksPage />;
     if (path === '/settings') return <SettingsPage />;
+    if (path === '/about') return <AboutPage />;
     if (path === '/profile') return <ProfilePage />;
     if (path === '/auth/signin') return <AuthPage mode="signin" />;
     if (path === '/auth/signup') return <AuthPage mode="signup" />;
