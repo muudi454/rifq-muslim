@@ -94,6 +94,8 @@ export const METHODS: MethodDef[] = [
   },
 ];
 
+import { civilDateInZone, isValidTimeZone, zoneOffsetHours, zonedInstant } from './timezone';
+
 export const DEFAULT_METHOD = 'MWL';
 
 const DEG = Math.PI / 180;
@@ -144,14 +146,14 @@ interface TimeSet {
 
 /** Returns prayer times as fractional hours in the given timezone. */
 function computeRaw(
-  date: Date,
+  civil: { year: number; month: number; day: number },
   coords: Coords,
   method: MethodDef,
   asrShadow: number,
   tzOffsetHours: number,
 ): TimeSet {
   const jd =
-    julianDate(date.getFullYear(), date.getMonth() + 1, date.getDate()) -
+    julianDate(civil.year, civil.month, civil.day) -
     coords.longitude / (15 * 24);
   const { declination: decl, equation } = sunPosition(jd);
 
@@ -207,6 +209,8 @@ export interface PrayerTimes {
   date: Date;
   times: Record<PrayerKey, Date>;
   method: MethodDef;
+  /** IANA zone the times were computed for, when one was supplied. */
+  timeZone?: string;
 }
 
 export function getPrayerTimes(
@@ -214,23 +218,34 @@ export function getPrayerTimes(
   coords: Coords,
   methodId: string = DEFAULT_METHOD,
   madhab: 'shafii' | 'hanafi' = 'shafii',
+  timeZone?: string,
 ): PrayerTimes {
   const method = METHODS.find((m) => m.id === methodId) ?? METHODS[0];
   const asrShadow = madhab === 'hanafi' ? 2 : 1;
-  // Use the offset the device actually uses for that date (handles DST).
-  const tzOffsetHours = -date.getTimezoneOffset() / 60;
-  const raw = computeRaw(date, coords, method, asrShadow, tzOffsetHours);
+  // When the selected location's IANA zone is known the times are anchored to
+  // that zone's wall clock, so a city abroad shows its own local prayer times
+  // regardless of where the phone happens to be. Otherwise the device zone is
+  // used, exactly as before.
+  const zone = timeZone && isValidTimeZone(timeZone) ? timeZone : undefined;
+  const tzOffsetHours = zone ? zoneOffsetHours(zone, date) : -date.getTimezoneOffset() / 60;
+  const civil = zone
+    ? civilDateInZone(date, zone)
+    : { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() };
+  const raw = computeRaw(civil, coords, method, asrShadow, tzOffsetHours);
 
   const toDate = (hours: number): Date => {
-    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const minutes = Math.round(fixHour(hours) * 60);
-    d.setMinutes(minutes);
+    if (zone) {
+      return zonedInstant(civil.year, civil.month, civil.day, fixHour(hours), zone);
+    }
+    const d = new Date(civil.year, civil.month - 1, civil.day);
+    d.setMinutes(Math.round(fixHour(hours) * 60));
     return d;
   };
 
   return {
     date,
     method,
+    timeZone: zone,
     times: {
       fajr: toDate(raw.fajr),
       sunrise: toDate(raw.sunrise),
@@ -263,12 +278,18 @@ export function nextPrayer(
   return { key: 'fajr', at: tomorrow, remainingMs: tomorrow.getTime() - now.getTime() };
 }
 
-export function formatTime(d: Date, lang: 'en' | 'ar', hour12 = true): string {
+export function formatTime(
+  d: Date,
+  lang: 'en' | 'ar',
+  hour12 = true,
+  timeZone?: string,
+): string {
   try {
     return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12,
+      ...(timeZone ? { timeZone } : {}),
     }).format(d);
   } catch {
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;

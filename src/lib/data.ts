@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import type { UserLocation } from './location';
 
 export interface Surah {
   n: number;
@@ -103,7 +104,7 @@ export interface UserSettings {
   showTranslation: boolean;
   method: string;
   madhab: 'shafii' | 'hanafi';
-  location: { lat: number; lon: number; label: string } | null;
+  location: UserLocation | null;
   vibrate: boolean;
 }
 
@@ -113,9 +114,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showTranslation: true,
   method: 'MWL',
   madhab: 'shafii',
-  // A sensible starting point so prayer times are visible before the user
-  // shares their own location; "Use my location" replaces it.
-  location: { lat: 21.4225, lon: 39.8262, label: 'Makkah' },
+  // No country is ever assumed. The user chooses their own place (GPS, city
+  // search or manual coordinates) the first time they need prayer times.
+  location: null,
   vibrate: true,
 };
 

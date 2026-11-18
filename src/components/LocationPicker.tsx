@@ -4,7 +4,6 @@ import { useStore } from '../lib/store';
 import {
   COUNTRIES,
   COUNTRY_COUNT,
-  formatCoords,
   isValidLatitude,
   isValidLongitude,
   searchCities,
@@ -12,6 +11,7 @@ import {
   type City,
   type Country,
 } from '../data/countries';
+import { flagOf } from '../data/countryTypes';
 import {
   locationDetail,
   locationFromCity,
@@ -19,7 +19,6 @@ import {
   locationLabel,
   type UserLocation,
 } from '../lib/location';
-import { timeZoneOffsetLabel } from '../lib/timezone';
 
 type GpsState = 'idle' | 'locating' | 'denied' | 'unavailable' | 'timeout' | 'error';
 
@@ -150,7 +149,7 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
                 .replace('{cities}', String(COUNTRIES.reduce((n, c) => n + c.cities.length, 0)))}
             </p>
           </div>
-          <button type="button" className="lp-close" onClick={onClose} aria-label={t('common.close')}>
+          <button type="button" className="lp-close" onClick={onClose} aria-label={t('loc.close')}>
             ✕
           </button>
         </div>
@@ -159,9 +158,7 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
           {settings.location && (
             <div className="lp-current">
               <span className="lp-flag" aria-hidden="true">
-                {settings.location.countryCode
-                  ? COUNTRY_FLAG(settings.location.countryCode)
-                  : '📍'}
+                {settings.location.countryCode ? flagOf(settings.location.countryCode) : '📍'}
               </span>
               <div className="lp-current-main">
                 <p className="lp-current-label">{locationLabel(settings.location, lang)}</p>
@@ -343,12 +340,3 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
     </div>
   );
 }
-
-/** Local flag helper kept out of the render body for readability. */
-function COUNTRY_FLAG(code: string): string {
-  const upper = code.toUpperCase();
-  if (!/^[A-Z]{2}$/.test(upper)) return '🌍';
-  return String.fromCodePoint(...[...upper].map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65)));
-}
-
-export { formatCoords, timeZoneOffsetLabel };
