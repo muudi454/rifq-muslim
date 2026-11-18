@@ -4,6 +4,7 @@ import { EUROPE } from './europe';
 import { AMERICAS } from './americas';
 import { OCEANIA } from './oceania';
 import { flagOf, type City, type Country, type CountrySeed } from '../countryTypes';
+import { capitalArOf, capitalOf } from '../capitals';
 
 export type { City, Country };
 
@@ -25,6 +26,8 @@ export const COUNTRIES: Country[] = SEEDS.map(([code, name, nameAr, tz, cities])
     nameAr,
     flag,
     tz,
+    capital: capitalOf(code),
+    capitalAr: capitalArOf(code),
     cities: cities.map(([cityName, region, lat, lon, cityTz]) => ({
       name: cityName,
       region,
