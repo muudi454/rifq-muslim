@@ -97,6 +97,14 @@ for (const dateStr of DATES) {
     check(fajrGap > 30, `${label}: Fajr only ${fajrGap.toFixed(0)} min before sunrise`);
     check(ishaGap > 20, `${label}: Isha only ${ishaGap.toFixed(0)} min after Maghrib`);
 
+    // Asr must sit hours after Dhuhr, not minutes: a unit slip here once put it
+    // 12 minutes after noon.
+    const asrGap = (result.times.asr.getTime() - result.times.dhuhr.getTime()) / 60000;
+    check(
+      asrGap >= 60 && asrGap <= 300,
+      `${label}: Asr is ${asrGap.toFixed(0)} min after Dhuhr, expected 60-300`,
+    );
+
     const row = ORDER.map((k) => `${k}=${localTime(result.times[k], c.tz)}`).join('  ');
     console.log(`${c.name.padEnd(24)} ${c.tz.padEnd(20)} ${row}`);
   }

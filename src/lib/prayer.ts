@@ -220,12 +220,13 @@ function computeRaw(
 
   // Asr: shadow length equals `asrShadow` times the object's length.
   const asrAltitude = arccot(asrShadow + tan(Math.abs(coords.latitude - decl)));
+  // hourAngle() already returns hours, so it is added to Dhuhr directly.
   const asrHourAngle = hourAngle(asrAltitude);
 
   let fajr = T(method.fajr);
   const sunrise = T(0.833);
   const maghribBase = T(0.833, false);
-  const asr = dhuhr + (Number.isNaN(asrHourAngle) ? 3 : asrHourAngle / 15);
+  const asr = dhuhr + (Number.isNaN(asrHourAngle) ? 3 : asrHourAngle);
 
   const maghrib =
     method.maghribMinutes != null
