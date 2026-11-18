@@ -9,9 +9,31 @@
       content="RIFQ Muslim — Quran, prayer times, Qibla, Tasbih, Duas, Hadith and Hijri calendar in one calm Islamic app."
     />
     <meta name="theme-color" content="#065f46" />
+    <meta name="application-name" content="RIFQ Muslim" />
+    <meta name="msapplication-TileColor" content="#065f46" />
+    <meta name="apple-mobile-web-app-title" content="RIFQ Muslim" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" href="/icons/splash-1170x2532.png" />
+    <style>
+      /* Branded splash while the app boots. Disappears the moment React mounts. */
+      html,
+      body {
+        margin: 0;
+        background: #fbf9f3;
+      }
+      #root:empty {
+        min-height: 100vh;
+      }
+      #root:empty::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: #065f46 url('/icons/icon-512.png') center / 168px no-repeat;
+      }
+    </style>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

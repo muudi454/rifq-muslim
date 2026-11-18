@@ -134,6 +134,28 @@ export default function SettingsPage() {
             </button>
           </div>
         </div>
+
+        <label className="field">
+          <span>{t('prayer.highLatitude')}</span>
+          <select
+            className="select"
+            data-testid="settings-highlat"
+            value={settings.highLatitude}
+            onChange={(e) =>
+              updateSettings({ highLatitude: e.target.value as typeof settings.highLatitude })
+            }
+          >
+            {HIGH_LATITUDE_RULES.map((rule) => (
+              <option key={rule} value={rule}>
+                {HIGH_LATITUDE_LABELS[rule][lang]}
+              </option>
+            ))}
+          </select>
+          <p className="row-sub" style={{ marginTop: 6 }}>
+            {t('prayer.highLatitudeHint')}
+          </p>
+        </label>
+
         <label className="field">
           <span>{t('prayer.location')}</span>
         </label>
