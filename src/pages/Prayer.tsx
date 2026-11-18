@@ -108,6 +108,19 @@ export default function PrayerPage() {
 
         <LocationFacts location={place} />
 
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+          <Link to="/qibla" className="btn btn-ghost btn-sm">
+            <IconCompass size={15} /> {t('nav.qibla')}
+          </Link>
+          <Link
+            to="/notifications"
+            className="btn btn-ghost btn-sm"
+            data-testid="prayer-athan-link"
+          >
+            {t('nav.notifications')}
+          </Link>
+        </div>
+
         <label className="field" style={{ marginTop: 14 }}>
           <span>{t('prayer.method')}</span>
           <select
@@ -178,7 +191,7 @@ export default function PrayerPage() {
           <Link to="/qibla" className="btn btn-ghost btn-sm">
             <IconCompass size={16} /> {t('nav.qibla')}
           </Link>
-          <Link to="/notifications" className="btn btn-ghost btn-sm" data-testid="prayer-athan-link">
+          <Link to="/notifications" className="btn btn-ghost btn-sm">
             {t('nav.notifications')}
           </Link>
         </section>
