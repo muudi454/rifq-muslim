@@ -10,6 +10,8 @@ import React, {
 interface RouterValue {
   path: string;
   navigate: (to: string, opts?: { replace?: boolean }) => void;
+  /** Returns to the previous in-app screen, or Home when this is the first screen. */
+  back: () => void;
 }
 
 const RouterContext = createContext<RouterValue | null>(null);
@@ -30,13 +32,22 @@ export function RouterProvider({ children }: { children: React.ReactNode }) {
 
   const navigate = useCallback((to: string, opts?: { replace?: boolean }) => {
     if (to === currentPath()) return;
-    if (opts?.replace) window.history.replaceState({}, '', to);
-    else window.history.pushState({}, '', to);
+    const state = { rifq: true };
+    if (opts?.replace) window.history.replaceState(state, '', to);
+    else window.history.pushState(state, '', to);
     setPath(to);
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }, []);
 
-  const value = useMemo(() => ({ path, navigate }), [path, navigate]);
+  // In-app back: only unwinds history the app itself created. A screen opened
+  // directly (deep link, PWA relaunch) falls back to Home instead of leaving the app.
+  const back = useCallback(() => {
+    const state = window.history.state as { rifq?: boolean } | null;
+    if (state?.rifq) window.history.back();
+    else navigate('/');
+  }, [navigate]);
+
+  const value = useMemo(() => ({ path, navigate, back }), [path, navigate, back]);
   return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 }
 

@@ -25,6 +25,14 @@ const dict: Record<string, Entry> = {
   'nav.bookmarks': ['Bookmarks', 'المحفوظات'],
   'nav.settings': ['Settings', 'الإعدادات'],
   'nav.more': ['More', 'المزيد'],
+  'nav.about': ['About RIFQ Muslim', 'حول رِفْق مسلم'],
+  'notFound.title': ['This page is not available', 'هذه الصفحة غير متوفرة'],
+  'notFound.body': [
+    'There is no screen at this address in RIFQ Muslim. Choose a destination below to continue.',
+    'لا توجد شاشة بهذا العنوان في رِفْق مسلم. اختر وجهة أدناه للمتابعة.',
+  ],
+  'notFound.address': ['Requested address', 'العنوان المطلوب'],
+  'notFound.home': ['Back to Home', 'العودة إلى الرئيسية'],
 
   'auth.signIn': ['Sign in', 'تسجيل الدخول'],
   'auth.signUp': ['Create account', 'إنشاء حساب'],
