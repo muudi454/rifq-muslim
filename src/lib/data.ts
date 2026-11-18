@@ -149,6 +149,21 @@ export const DEFAULT_SETTINGS: UserSettings = {
   athan: DEFAULT_ATHAN,
 };
 
+/** Merge stored settings with defaults, including the nested Athan block. */
+export function mergeSettings(saved: Partial<UserSettings> | null | undefined): UserSettings {
+  const base = saved || {};
+  const athan = (base as { athan?: Partial<AthanSettings> }).athan;
+  return {
+    ...DEFAULT_SETTINGS,
+    ...base,
+    athan: {
+      ...DEFAULT_ATHAN,
+      ...(athan || {}),
+      prayers: { ...DEFAULT_ATHAN.prayers, ...((athan && athan.prayers) || {}) },
+    },
+  };
+}
+
 export interface TasbihSession {
   id: string;
   dhikr: string;
