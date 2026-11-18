@@ -6,16 +6,27 @@
  * locally so it can be switched to the Google Play listing later without a code
  * change — until then it points at the live app, which installs from the
  * browser. No store link is ever invented.
+ *
+ * Invitation counting is opt-in and anonymous (see lib/inviteTracking.ts):
+ * nothing is sent unless the user enables it on this screen.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as QRCode from 'qrcode';
 import { useI18n } from '../lib/i18n';
+import {
+  inviteConsent,
+  inviteStats,
+  recordShare,
+  setInviteConsent,
+  shareUrlWithRef,
+  type ShareChannel,
+} from '../lib/inviteTracking';
 
 const STORAGE_KEY = 'rifq.invite.url';
 
 const MESSAGES = {
-  en: 'Join RIFQ Muslim – Your Faith, Your Daily Companion.',
-  ar: 'انضم إلى رِفْق مسلم – رفيقك اليومي في عبادتك.',
+  en: 'Assalamu Alaikum! Join RIFQ Muslim – Your Faith, Your Daily Companion. Discover Quran, prayer times, Qibla, Athan, Duas, Hadith and more. Share this app with your family and friends.',
+  ar: 'السلام عليكم! انضم إلى رِفْق مسلم – رفيقك اليومي في عبادتك. اكتشف القرآن ومواقيت الصلاة والقبلة والأذان والأدعية والأحاديث والمزيد. شارك التطبيق مع أهلك وأصدقائك.',
 };
 
 function liveAppUrl(): string {
@@ -41,15 +52,19 @@ export default function InvitePage() {
   const [status, setStatus] = useState<string>('');
   const [canShare, setCanShare] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [consent, setConsent] = useState<boolean>(() => inviteConsent());
+  const [stats, setStats] = useState(() => inviteStats());
 
   const message = MESSAGES[lang] ?? MESSAGES.en;
-  const shareText = `${message} ${inviteUrl}`;
+  // The shared link carries an invitation marker so opens can be counted.
+  const shareUrl = useMemo(() => shareUrlWithRef(inviteUrl), [inviteUrl]);
+  const shareText = `${message} ${shareUrl}`;
 
   useEffect(() => {
     setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
   }, []);
 
-  // Real QR of whatever URL is currently selected — regenerated when it changes.
+  // Real QR of the official app URL — regenerated when it changes.
   useEffect(() => {
     let alive = true;
     QRCode.toDataURL(inviteUrl, {
@@ -69,18 +84,24 @@ export default function InvitePage() {
     };
   }, [inviteUrl]);
 
+  const trackShare = useCallback((channel: ShareChannel) => {
+    recordShare(channel);
+    setStats(inviteStats());
+  }, []);
+
   const openExternal = useCallback((url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   }, []);
 
   const copyLink = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(inviteUrl);
+      await navigator.clipboard.writeText(shareUrl);
       setStatus(t('invite.copied'));
+      trackShare('copy');
     } catch {
       setStatus(t('invite.copyFailed'));
     }
-  }, [inviteUrl, t]);
+  }, [shareUrl, t, trackShare]);
 
   const nativeShare = useCallback(async () => {
     if (!canShare) {
@@ -88,11 +109,12 @@ export default function InvitePage() {
       return;
     }
     try {
-      await navigator.share({ title: 'RIFQ Muslim', text: message, url: inviteUrl });
+      await navigator.share({ title: 'RIFQ Muslim', text: message, url: shareUrl });
+      trackShare('native');
     } catch {
       /* the user dismissed the sheet — nothing to report */
     }
-  }, [canShare, inviteUrl, message, t]);
+  }, [canShare, message, shareUrl, t, trackShare]);
 
   const saveUrl = useCallback(() => {
     const next = draft.trim();
@@ -126,31 +148,31 @@ export default function InvitePage() {
   const channels = useMemo(
     () => [
       {
-        id: 'whatsapp',
+        id: 'whatsapp' as ShareChannel,
         label: t('invite.whatsapp'),
         href: `https://wa.me/?text=${encodeURIComponent(shareText)}`,
         tone: 'whatsapp',
       },
       {
-        id: 'telegram',
+        id: 'telegram' as ShareChannel,
         label: t('invite.telegram'),
-        href: `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(message)}`,
+        href: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`,
         tone: 'telegram',
       },
       {
-        id: 'facebook',
+        id: 'facebook' as ShareChannel,
         label: t('invite.facebook'),
-        href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(inviteUrl)}`,
+        href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
         tone: 'facebook',
       },
       {
-        id: 'sms',
+        id: 'sms' as ShareChannel,
         label: t('invite.sms'),
         href: `sms:?&body=${encodeURIComponent(shareText)}`,
         tone: 'sms',
       },
     ],
-    [inviteUrl, message, shareText, t],
+    [message, shareText, shareUrl, t],
   );
 
   return (
@@ -173,7 +195,7 @@ export default function InvitePage() {
             className="input"
             data-testid="invite-link"
             readOnly
-            value={inviteUrl}
+            value={shareUrl}
             onFocus={(e) => e.currentTarget.select()}
           />
         </label>
@@ -234,12 +256,38 @@ export default function InvitePage() {
               type="button"
               className={`btn btn-ghost invite-channel invite-${channel.tone}`}
               data-testid={`invite-${channel.id}`}
-              onClick={() => openExternal(channel.href)}
+              onClick={() => {
+                trackShare(channel.id);
+                openExternal(channel.href);
+              }}
             >
               {channel.label}
             </button>
           ))}
         </div>
+      </section>
+
+      <section className="card">
+        <h2 className="section-title">{t('invite.privacyTitle')}</h2>
+        <p className="row-sub">{t('invite.privacyBody')}</p>
+        <label
+          className="row"
+          style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}
+        >
+          <input
+            type="checkbox"
+            data-testid="invite-consent"
+            checked={consent}
+            onChange={(e) => {
+              setInviteConsent(e.target.checked);
+              setConsent(e.target.checked);
+            }}
+          />
+          <span className="small">{t('invite.privacyToggle')}</span>
+        </label>
+        <p className="tiny muted" data-testid="invite-stats" style={{ marginTop: 10 }}>
+          {t('invite.statsLabel')}: {stats.shares}
+        </p>
       </section>
 
       <section className="card">
