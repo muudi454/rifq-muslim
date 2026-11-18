@@ -8,7 +8,7 @@ const CATEGORIES = ['all', 'manners', 'creed', 'fiqh', 'seerah'] as const;
 type Cat = (typeof CATEGORIES)[number];
 
 export default function HadithPage() {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const { toggleBookmark, isBookmarked, toast } = useStore();
   const [data, setData] = useState<HadithData | null>(null);
   const [error, setError] = useState<string | null>(null);
