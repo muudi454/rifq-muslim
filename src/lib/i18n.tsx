@@ -323,6 +323,32 @@ const dict: Record<string, Entry> = {
   'loc.none': ['No location chosen yet', 'لم يتم اختيار موقع بعد'],
   'loc.noResults': ['No country or city matches that search.', 'لا توجد دولة أو مدينة تطابق البحث.'],
   'loc.timezone': ['Time zone', 'المنطقة الزمنية'],
+  'loc.country': ['Country', 'الدولة'],
+  'loc.capital': ['Capital', 'العاصمة'],
+  'loc.city': ['City', 'المدينة'],
+  'loc.region': ['Region', 'المنطقة'],
+  'loc.coordinates': ['Coordinates', 'الإحداثيات'],
+  'loc.facts': ['Location details', 'تفاصيل الموقع'],
+  'loc.identifying': ['Identifying your city and country…', 'جارٍ تحديد مدينتك ودولتك…'],
+  'loc.gpsVerified': [
+    'Your city, region and country were identified from your GPS position.',
+    'تم تحديد مدينتك ومنطقتك ودولتك من موقع GPS الخاص بك.',
+  ],
+  'loc.gpsOffline': [
+    'Your exact coordinates are saved. The city shown is the nearest one in the offline dataset because the place lookup could not be reached.',
+    'تم حفظ إحداثياتك الدقيقة. المدينة المعروضة هي الأقرب في البيانات دون اتصال لأن خدمة تحديد المكان لم تكن متاحة.',
+  ],
+  'loc.accuracy': ['GPS accuracy', 'دقة GPS'],
+  'loc.worldwideSearch': [
+    'Any city, town or village worldwide (OpenStreetMap)',
+    'أي مدينة أو بلدة أو قرية في العالم (OpenStreetMap)',
+  ],
+  'loc.searching': ['Searching worldwide…', 'جارٍ البحث في العالم…'],
+  'loc.worldwideResults': ['Worldwide results', 'نتائج من جميع أنحاء العالم'],
+  'loc.offlineSearch': [
+    'Worldwide search needs internet right now. Every country and city bundled in the app still works offline.',
+    'البحث العالمي يحتاج إلى الإنترنت الآن. جميع الدول والمدن المضمّنة في التطبيق تعمل دون اتصال.',
+  ],
   'loc.choosePrompt': [
     'Pick your country and city — prayer times and Qibla follow your own coordinates.',
     'اختر دولتك ومدينتك — أوقات الصلاة والقبلة تتبع إحداثياتك.',

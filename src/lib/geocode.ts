@@ -1,5 +1,5 @@
 import { capitalArOf, capitalOf } from '../data/capitals';
-import { countryByCode, distanceKm, nearestCity } from '../data/countries';
+import { countryByCode, nearestCity } from '../data/countries';
 import { flagOf } from '../data/countryTypes';
 import { locationFromCity, type GeoPlace, type UserLocation } from './location';
 import { isValidTimeZone, localTimeZone } from './timezone';
@@ -298,13 +298,4 @@ export async function resolveLocationFromCoords(
       accuracyM,
     },
   };
-}
-
-/** Number of bundled places within a radius — used for honest UI copy. */
-export function bundledCitiesNear(lat: number, lon: number, radiusKm = 50): number {
-  let count = 0;
-  for (const { lat: cLat, lon: cLon } of [] as { lat: number; lon: number }[]) {
-    if (distanceKm(lat, lon, cLat, cLon) <= radiusKm) count += 1;
-  }
-  return count;
 }
