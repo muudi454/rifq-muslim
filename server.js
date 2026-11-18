@@ -57,6 +57,7 @@ const emptyStore = () => ({
   pushSubs: [],
   content: [],
   audit: [],
+  invites: { shares: 0, opens: 0, channels: {} },
   config: { languages: ['en', 'ar'] },
 });
 
@@ -428,6 +429,26 @@ app.post('/api/activity', (req, res) => {
   }
   persist();
   res.json({ ok: true, blocked: record.blocked });
+});
+
+app.post('/api/invite/track', (req, res) => {
+  const ip = clientIp(req);
+  if (!rateLimit(`invite:${ip}`, 40, 60_000)) {
+    return res.status(429).json({ ok: false, error: 'rate_limited' });
+  }
+  const kind = req.body?.kind === 'share' ? 'share' : 'open';
+  const channel = safe(req.body?.channel, 20) || 'link';
+  if (!db.invites) db.invites = { shares: 0, opens: 0, channels: {} };
+  if (!db.invites.channels) db.invites.channels = {};
+  if (kind === 'share') {
+    db.invites.shares += 1;
+    db.invites.channels[channel] = (db.invites.channels[channel] || 0) + 1;
+  } else {
+    db.invites.opens += 1;
+  }
+  persist();
+  // Aggregate counters only: no identifiers are stored with them.
+  res.json({ ok: true });
 });
 
 app.get('/api/announcements', (req, res) => {

@@ -1,7 +1,62 @@
-/* RIFQ Muslim service worker — offline shell, bundled data, push notifications. */
-const VERSION = 'rifq-v2';
+/*
+ * RIFQ Muslim service worker — offline shell, bundled data, push notifications.
+ *
+ * Push payloads are re-branded here as well as on the server, so a notification
+ * can never surface a development host name, a *.dev domain or a generic
+ * website title. Android prints the site origin under web notifications; that
+ * line is controlled by Chrome, not by this file (see docs/MOBILE_RELEASE.md).
+ */
+const VERSION = 'rifq-v3';
 const SHELL_CACHE = `${VERSION}-shell`;
 const DATA_CACHE = `${VERSION}-data`;
+
+const APP_NAME = 'RIFQ Muslim';
+const NOTIFICATION_ICON = '/icons/icon-192.png';
+const NOTIFICATION_BADGE = '/icons/notification-badge.png';
+
+const CATEGORY_LABEL = {
+  athan: 'Athan',
+  quran: 'Quran Audio',
+  dua: 'Daily Dua',
+  reminder: 'Prayer Reminder',
+  hadith: 'Hadith',
+  daily: 'Daily Reminder',
+};
+
+const CATEGORY_ROUTE = {
+  athan: '/prayer',
+  quran: '/quran',
+  dua: '/duas',
+  reminder: '/notifications',
+  hadith: '/hadith',
+  daily: '/',
+};
+
+/** Development / temporary hosts that must never appear in user-facing text. */
+const DEV_ORIGIN = /https?:\/\/(?:[\w-]+\.)*(?:ap-jt\.com|localhost|127\.0\.0\.1)(?::\d+)?[^\s]*/gi;
+
+function cleanText(value) {
+  return String(value || '')
+    .replace(DEV_ORIGIN, APP_NAME)
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function notificationPayload(raw) {
+  const input = raw && typeof raw === 'object' ? raw : {};
+  const category = Object.prototype.hasOwnProperty.call(CATEGORY_LABEL, input.category)
+    ? input.category
+    : 'daily';
+  const label = CATEGORY_LABEL[category];
+  const detail = [cleanText(input.title), cleanText(input.body)].filter(Boolean).join(' · ');
+  return {
+    title: `${APP_NAME} – ${label}`,
+    body: detail || label,
+    url: input.url || CATEGORY_ROUTE[category],
+    category,
+    tag: input.tag || `rifq-${category}`,
+  };
+}
 
 const SHELL_ASSETS = [
   '/',
@@ -10,6 +65,7 @@ const SHELL_ASSETS = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png',
+  '/icons/notification-badge.png',
 ];
 
 const DATA_ASSETS = ['/data/quran.json', '/data/hadith.json'];
@@ -41,27 +97,22 @@ self.addEventListener('activate', (event) => {
 /* ---------------------------------------------------------------- push */
 
 self.addEventListener('push', (event) => {
-  let payload = { title: 'RIFQ Muslim', body: '', url: '/' };
+  let raw = {};
   try {
-    if (event.data) {
-      const parsed = event.data.json();
-      payload = {
-        title: parsed.title || payload.title,
-        body: parsed.body || '',
-        url: parsed.url || '/',
-      };
-    }
+    if (event.data) raw = event.data.json();
   } catch {
-    if (event.data) payload.body = event.data.text();
+    if (event.data) raw = { body: event.data.text() };
   }
+
+  const payload = notificationPayload(raw);
 
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      data: { url: payload.url },
-      tag: 'rifq-push',
+      icon: NOTIFICATION_ICON,
+      badge: NOTIFICATION_BADGE,
+      data: { url: payload.url, category: payload.category },
+      tag: payload.tag,
       renotify: false,
     }),
   );
@@ -69,7 +120,11 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const target = (event.notification.data && event.notification.data.url) || '/';
+  const data = event.notification.data || {};
+  const target =
+    data.url ||
+    CATEGORY_ROUTE[data.category] ||
+    '/';
   event.waitUntil(
     (async () => {
       const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });

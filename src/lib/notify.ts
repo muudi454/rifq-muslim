@@ -86,6 +86,14 @@ export function categoryTitle(category: NotificationCategory): string {
   return `${APP_NOTIFICATION_NAME} – ${CATEGORY_LABEL[category]}`;
 }
 
+/** Development / temporary hosts that must never appear in user-facing text. */
+const DEV_ORIGIN = /https?:\/\/(?:[\w-]+\.)*(?:ap-jt\.com|localhost|127\.0\.0\.1)(?::\d+)?[^\s]*/gi;
+
+/** Remove development host names and temporary URLs from notification text. */
+export function cleanNotificationText(value: string): string {
+  return value.replace(DEV_ORIGIN, APP_NOTIFICATION_NAME).replace(/\s+/g, ' ').trim();
+}
+
 /** Build the exact payload shown to the user. */
 export function buildNotification(
   category: NotificationCategory,
@@ -95,7 +103,7 @@ export function buildNotification(
   const route = input.url || CATEGORY_ROUTE[category];
   return {
     title: categoryTitle(category),
-    body: detail || CATEGORY_LABEL[category],
+    body: cleanNotificationText(detail) || CATEGORY_LABEL[category],
     icon: NOTIFICATION_ICON,
     badge: NOTIFICATION_BADGE,
     tag: input.tag || `rifq-${category}`,
