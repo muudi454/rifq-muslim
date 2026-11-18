@@ -41,7 +41,7 @@ if (!fs.existsSync(DIST)) {
   app.use(express.static(DIST, { index: false, maxAge: '1h' }));
 
   // Single-page-app fallback.
-  app.get('*', (_req, res) => {
+  app.get('/*splat', (_req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(DIST, 'index.html'));
   });
