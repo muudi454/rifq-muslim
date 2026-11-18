@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import { distanceToKaaba, qiblaBearing } from '../lib/qibla';
-import { locationFromCoords } from '../lib/location';
+import { resolveLocationFromCoords } from '../lib/geocode';
+import LocationFacts from '../components/LocationFacts';
 import LocationPicker from '../components/LocationPicker';
 import { IconCompass, IconInfo, IconMapPin } from '../components/Icons';
 
@@ -83,10 +84,15 @@ export default function QiblaPage() {
     }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = Number(pos.coords.latitude.toFixed(4));
-        const lon = Number(pos.coords.longitude.toFixed(4));
-        updateSettings({ location: locationFromCoords(lat, lon, 'gps') });
+      async (pos) => {
+        // Real device coordinates; only the place names come from the free geocoder.
+        const { location } = await resolveLocationFromCoords(
+          pos.coords.latitude,
+          pos.coords.longitude,
+          'gps',
+          pos.coords.accuracy,
+        );
+        updateSettings({ location });
         setLocating(false);
         toast(t('common.saved'));
       },
@@ -121,6 +127,13 @@ export default function QiblaPage() {
       </header>
 
       {error && <p className="alert alert-error">{error}</p>}
+
+      {coords && (
+        <section className="card">
+          <h2 className="section-title">{t('loc.facts')}</h2>
+          <LocationFacts location={coords} />
+        </section>
+      )}
 
       {!coords && (
         <section className="card">
