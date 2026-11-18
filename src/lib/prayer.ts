@@ -30,10 +30,11 @@ export const METHODS: MethodDef[] = [
     isha: 17,
   },
   {
-    id: 'ISNA',
-    name: { en: 'Islamic Society of North America', ar: 'الجمعية الإسلامية لأمريكا الشمالية' },
-    fajr: 15,
-    isha: 15,
+    id: 'UMM_AL_QURA',
+    name: { en: 'Umm al-Qura, Makkah', ar: 'أم القرى، مكة المكرمة' },
+    fajr: 18.5,
+    isha: 0,
+    ishaMinutes: 90,
   },
   {
     id: 'EGYPT',
@@ -42,23 +43,16 @@ export const METHODS: MethodDef[] = [
     isha: 17.5,
   },
   {
-    id: 'UMM_AL_QURA',
-    name: { en: 'Umm al-Qura, Makkah', ar: 'أم القرى، مكة المكرمة' },
-    fajr: 18.5,
-    isha: 0,
-    ishaMinutes: 90,
-  },
-  {
     id: 'KARACHI',
     name: { en: 'University of Islamic Sciences, Karachi', ar: 'جامعة العلوم الإسلامية، كراتشي' },
     fajr: 18,
     isha: 18,
   },
   {
-    id: 'DUBAI',
-    name: { en: 'Dubai', ar: 'دبي' },
-    fajr: 18.2,
-    isha: 18.2,
+    id: 'ISNA',
+    name: { en: 'Islamic Society of North America', ar: 'الجمعية الإسلامية لأمريكا الشمالية' },
+    fajr: 15,
+    isha: 15,
   },
   {
     id: 'KUWAIT',
@@ -74,16 +68,28 @@ export const METHODS: MethodDef[] = [
     ishaMinutes: 90,
   },
   {
-    id: 'SINGAPORE',
-    name: { en: 'Singapore / MUIS', ar: 'سنغافورة' },
-    fajr: 20,
-    isha: 18,
+    id: 'DUBAI',
+    name: { en: 'Dubai / UAE', ar: 'دبي / الإمارات' },
+    fajr: 18.2,
+    isha: 18.2,
   },
   {
     id: 'TURKEY',
     name: { en: 'Diyanet, Turkey', ar: 'ديانت، تركيا' },
     fajr: 18,
     isha: 17,
+  },
+  {
+    id: 'SINGAPORE',
+    name: { en: 'Singapore / MUIS', ar: 'سنغافورة / MUIS' },
+    fajr: 20,
+    isha: 18,
+  },
+  {
+    id: 'MOONSIGHTING',
+    name: { en: 'Moonsighting Committee', ar: 'لجنة رؤية الهلال' },
+    fajr: 18,
+    isha: 18,
   },
   {
     id: 'TEHRAN',
@@ -93,6 +99,44 @@ export const METHODS: MethodDef[] = [
     maghribMinutes: 4.5,
   },
 ];
+
+/** How Fajr and Isha are capped when the sun never reaches the angle. */
+export type HighLatitudeRule = 'none' | 'middle' | 'seventh' | 'angle';
+
+export const HIGH_LATITUDE_RULES: HighLatitudeRule[] = ['middle', 'seventh', 'angle', 'none'];
+
+export const HIGH_LATITUDE_LABELS: Record<
+  HighLatitudeRule,
+  { en: string; ar: string }
+> = {
+  middle: { en: 'Middle of the night', ar: 'منتصف الليل' },
+  seventh: { en: 'One-seventh of the night', ar: 'سُبع الليل' },
+  angle: { en: 'Angle-based (Diyanet style)', ar: 'حسب الزاوية' },
+  none: { en: 'No adjustment', ar: 'بدون تعديل' },
+};
+
+/** Looks a method up by id, falling back to the first entry. */
+export function methodById(id: string | undefined): MethodDef {
+  return METHODS.find((m) => m.id === id) ?? METHODS[0];
+}
+
+/**
+ * Share of the night (in hours) that Fajr and Isha may not exceed.
+ * Returned as a cap measured from sunrise (Fajr) and sunset (Isha).
+ */
+function nightPortion(rule: HighLatitudeRule, method: MethodDef, night: number): number | null {
+  if (!Number.isFinite(night) || night <= 0) return null;
+  switch (rule) {
+    case 'middle':
+      return night / 2;
+    case 'seventh':
+      return night / 7;
+    case 'angle':
+      return (night * Math.min(18, Math.max(1, method.fajr))) / 60;
+    default:
+      return null;
+  }
+}
 
 import { civilDateInZone, isValidTimeZone, zoneOffsetHours, zonedInstant } from './timezone';
 
@@ -151,6 +195,7 @@ function computeRaw(
   method: MethodDef,
   asrShadow: number,
   tzOffsetHours: number,
+  highLatitude: HighLatitudeRule,
 ): TimeSet {
   const jd =
     julianDate(civil.year, civil.month, civil.day) -
@@ -177,7 +222,7 @@ function computeRaw(
   const asrAltitude = arccot(asrShadow + tan(Math.abs(coords.latitude - decl)));
   const asrHourAngle = hourAngle(asrAltitude);
 
-  const fajr = T(method.fajr);
+  let fajr = T(method.fajr);
   const sunrise = T(0.833);
   const maghribBase = T(0.833, false);
   const asr = dhuhr + (Number.isNaN(asrHourAngle) ? 3 : asrHourAngle / 15);
@@ -194,12 +239,25 @@ function computeRaw(
     isha = T(method.isha, false);
   }
 
-  // High-latitude fallback: use the one-seventh rule when the sun never
-  // reaches the required depression angle.
-  if (Number.isNaN(fajr) || Number.isNaN(isha)) {
-    const night = fixHour(sunrise + 24 - maghribBase);
-    if (Number.isNaN(fajr)) return { fajr: maghribBase - night / 7, sunrise, dhuhr, asr, maghrib, isha: Number.isNaN(isha) ? maghribBase + night / 7 : isha };
-    if (Number.isNaN(isha)) isha = maghribBase + night / 7;
+  // High-latitude handling. Above roughly 48° the sun can fail to reach the
+  // Fajr/Isha depression angle in summer, and in winter the angle-based time
+  // can land outside a sensible share of the night. The chosen rule caps both
+  // prayers at a fraction of the night measured from sunrise and sunset, and
+  // is used outright when the angle is unreachable.
+  const night = fixHour(sunrise + 24 - maghribBase);
+  const cap = nightPortion(highLatitude, method, night);
+  const fallback = cap ?? (Number.isFinite(night) && night > 0 ? night / 2 : 6);
+
+  if (!Number.isFinite(fajr)) {
+    fajr = sunrise - fallback;
+  } else if (cap != null && fajr < sunrise - cap) {
+    fajr = sunrise - cap;
+  }
+
+  if (!Number.isFinite(isha)) {
+    isha = maghribBase + fallback;
+  } else if (cap != null && isha > maghribBase + cap) {
+    isha = maghribBase + cap;
   }
 
   return { fajr, sunrise, dhuhr, asr, maghrib, isha };
@@ -219,8 +277,9 @@ export function getPrayerTimes(
   methodId: string = DEFAULT_METHOD,
   madhab: 'shafii' | 'hanafi' = 'shafii',
   timeZone?: string,
+  highLatitude: HighLatitudeRule = 'seventh',
 ): PrayerTimes {
-  const method = METHODS.find((m) => m.id === methodId) ?? METHODS[0];
+  const method = methodById(methodId);
   const asrShadow = madhab === 'hanafi' ? 2 : 1;
   // When the selected location's IANA zone is known the times are anchored to
   // that zone's wall clock, so a city abroad shows its own local prayer times
@@ -231,7 +290,7 @@ export function getPrayerTimes(
   const civil = zone
     ? civilDateInZone(date, zone)
     : { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() };
-  const raw = computeRaw(civil, coords, method, asrShadow, tzOffsetHours);
+  const raw = computeRaw(civil, coords, method, asrShadow, tzOffsetHours, highLatitude);
 
   const toDate = (hours: number): Date => {
     if (zone) {
