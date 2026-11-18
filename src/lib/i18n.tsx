@@ -12,6 +12,10 @@ const dict: Record<string, Entry> = {
 
   'nav.home': ['Home', 'الرئيسية'],
   'nav.quran': ['Quran', 'القرآن'],
+  'nav.notifications': ['Athan', 'الأذان'],
+  'nav.contact': ['Contact', 'اتصل بنا'],
+  'nav.privacy': ['Privacy', 'الخصوصية'],
+  'nav.admin': ['Admin', 'الإدارة'],
   'nav.prayer': ['Prayer', 'الصلاة'],
   'nav.qibla': ['Qibla', 'القبلة'],
   'nav.tasbih': ['Tasbih', 'التسبيح'],
