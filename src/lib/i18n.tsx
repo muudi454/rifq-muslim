@@ -55,6 +55,14 @@ const dict: Record<string, Entry> = {
     'تم إنشاء الحساب. تحقّق من بريدك لتأكيده ثم سجّل الدخول.',
   ],
   'auth.required': ['Sign in to sync your bookmarks.', 'سجّل الدخول لمزامنة محفوظاتك.'],
+  'auth.localResetUnavailable': [
+    'Password reset links need Supabase. In on-device mode your password is stored only on this phone.',
+    'روابط استعادة كلمة المرور تحتاج Supabase. في وضع الجهاز تُحفظ كلمة المرور على هذا الهاتف فقط.',
+  ],
+  'auth.localPasswordUnavailable': [
+    'In on-device mode your password is stored locally. Connect Supabase to change it securely.',
+    'في وضع الجهاز تُحفظ كلمة المرور محليًا. اربط Supabase لتغييرها بأمان.',
+  ],
   'auth.localMode': ['On-device account', 'حساب على الجهاز'],
   'auth.localModeHelp': [
     'Supabase is not connected, so accounts and data stay on this device only. Connect Supabase to sync across devices.',
@@ -89,6 +97,8 @@ const dict: Record<string, Entry> = {
   'common.viewAll': ['View all', 'عرض الكل'],
   'common.minutes': ['min', 'دقيقة'],
   'common.hours': ['h', 'ساعة'],
+  'common.next': ['Next', 'التالي'],
+  'common.pause': ['Pause', 'إيقاف مؤقت'],
 
   'home.greetingMorning': ['Good morning', 'صباح الخير'],
   'home.greetingAfternoon': ['Good afternoon', 'طاب نهارك'],
