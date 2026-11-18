@@ -16,7 +16,7 @@ const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
 const ADMIN_NAME = process.env.ADMIN_NAME || 'Eng Mohamud Yusuf';
-const CONTACT_TO = (process.env.CONTACT_TO_EMAIL || 'mohamoudistanbul@gmail.com').trim();
+const CONTACT_TO = (process.env.CONTACT_TO_EMAIL || 'rifqmuslim@gmail.com').trim();
 const CONTACT_FROM = process.env.CONTACT_FROM_EMAIL || '';
 const RESEND_KEY = process.env.RESEND_API_KEY || '';
 const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || '';
@@ -390,7 +390,7 @@ app.get('/api/config', (_req, res) => {
     emailConfigured: emailConfigured(),
     adminConfigured: adminConfigured(),
     contact: {
-      email: 'mohamoudistanbul@gmail.com',
+      email: 'rifqmuslim@gmail.com',
       phone: '+252-612215593',
       whatsapp: '252612215593',
     },

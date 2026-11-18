@@ -13,7 +13,7 @@ Ready-to-paste metadata for Google Play and the Apple App Store. Nothing here im
 | Content rating | Everyone / 4+ — religious content, no ads, no public user content |
 | Price | Free, no in-app purchases, no subscriptions |
 | Developer credit | Made by Eng Mohamud Yusuf |
-| Support email | mohamoudistanbul@gmail.com |
+| Support email | rifqmuslim@gmail.com |
 | Support phone | +252-612215593 |
 | Privacy policy | `https://<your-domain>/privacy` |
 

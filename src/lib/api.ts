@@ -1,7 +1,7 @@
 /* Shared client helpers for the contact form, admin dashboard and device identity. */
 
 export const CONTACT = {
-  email: 'mohamoudistanbul@gmail.com',
+  email: 'rifqmuslim@gmail.com',
   phone: '+252-612215593',
   phoneDial: '+252612215593',
   whatsapp: '252612215593',
