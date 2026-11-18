@@ -31,6 +31,9 @@ export interface Country {
   nameAr: string;
   flag: string;
   tz: string;
+  /** Capital city, shown as its own fact next to the user's real city. */
+  capital: string;
+  capitalAr: string;
   cities: City[];
 }
 
