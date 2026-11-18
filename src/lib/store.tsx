@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import {
   DEFAULT_SETTINGS,
+  mergeSettings,
   deleteCloudBookmark,
   fetchCloudBookmarks,
   fetchCloudSettings,
@@ -60,7 +61,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { user, cloud } = useAuth();
   const userId = user?.id ?? null;
   const [settings, setSettings] = useState<UserSettings>(() =>
-    readLocal(keyFor('settings', null), DEFAULT_SETTINGS),
+    mergeSettings(readLocal(keyFor('settings', null), DEFAULT_SETTINGS)),
   );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => readLocal(keyFor('bookmarks', null), []));
   const [sessions, setSessions] = useState<TasbihSession[]>(() =>
@@ -82,7 +83,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const localSettings = readLocal(keyFor('settings', userId), DEFAULT_SETTINGS);
     const localBookmarks = readLocal(keyFor('bookmarks', userId), [] as Bookmark[]);
     const localSessions = readLocal(keyFor('sessions', userId), [] as TasbihSession[]);
-    setSettings({ ...DEFAULT_SETTINGS, ...localSettings });
+    setSettings(mergeSettings(localSettings));
     setBookmarks(localBookmarks);
     setSessions(localSessions);
 
@@ -118,7 +119,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         writeLocal(keyFor('bookmarks', userId), list);
 
         if (cloudSettings) {
-          const next = { ...DEFAULT_SETTINGS, ...cloudSettings };
+          const next = mergeSettings(cloudSettings as Partial<UserSettings>);
           setSettings(next);
           writeLocal(keyFor('settings', userId), next);
         } else {
