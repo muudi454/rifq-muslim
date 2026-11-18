@@ -12,6 +12,7 @@ import {
   type PrayerKey,
 } from '../lib/prayer';
 import { locationDetail, locationTimeZone } from '../lib/location';
+import LocationFacts from '../components/LocationFacts';
 import LocationPicker from '../components/LocationPicker';
 import { IconCompass, IconMapPin, IconRefresh } from '../components/Icons';
 
@@ -104,6 +105,8 @@ export default function PrayerPage() {
         <button className="btn btn-ghost btn-sm" onClick={() => setPickerOpen(true)}>
           <IconMapPin size={15} /> {t('loc.change')}
         </button>
+
+        <LocationFacts location={place} />
 
         <label className="field" style={{ marginTop: 14 }}>
           <span>{t('prayer.method')}</span>

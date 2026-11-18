@@ -6,6 +6,7 @@ import { useAuth } from '../lib/auth';
 import { useInstall } from '../lib/install';
 import { METHODS } from '../lib/prayer';
 import { locationDetail } from '../lib/location';
+import LocationFacts from '../components/LocationFacts';
 import { DEFAULT_SETTINGS } from '../lib/data';
 import { APP_VERSION, DEVELOPER_CREDIT } from '../lib/credit';
 import { flagOf } from '../data/countryTypes';
@@ -149,6 +150,8 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
+
+        <LocationFacts location={settings.location} />
         <button className="btn btn-primary btn-sm" onClick={() => setPickerOpen(true)}>
           <IconMapPin size={16} /> {t('loc.change')}
         </button>
