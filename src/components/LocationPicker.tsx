@@ -15,12 +15,23 @@ import { flagOf } from '../data/countryTypes';
 import {
   locationDetail,
   locationFromCity,
-  locationFromCoords,
+  locationFromPlace,
   locationLabel,
+  type GeoPlace,
   type UserLocation,
 } from '../lib/location';
+import { resolveLocationFromCoords, searchWorldwide } from '../lib/geocode';
 
-type GpsState = 'idle' | 'locating' | 'denied' | 'unavailable' | 'timeout' | 'error';
+type GpsState =
+  | 'idle'
+  | 'locating'
+  | 'identifying'
+  | 'denied'
+  | 'unavailable'
+  | 'timeout'
+  | 'error';
+
+type RemoteState = 'idle' | 'loading' | 'done' | 'offline';
 
 interface Props {
   open: boolean;
@@ -29,9 +40,17 @@ interface Props {
 }
 
 /**
- * Worldwide location picker: search any of the 195 countries (by name, Arabic
- * name, ISO code, city or region), drill into a country's cities and regions,
- * detect the current position with GPS, or type coordinates by hand.
+ * Worldwide location picker.
+ *
+ * Three ways to set a real location:
+ *  1. GPS — the device's actual coordinates are reverse-geocoded to the real
+ *     city, region and country (never a bundled default).
+ *  2. Live search — every city, town and village on Earth via OpenStreetMap,
+ *     alongside the bundled 195 countries for instant offline selection.
+ *  3. Manual coordinates — reverse-geocoded the same way as GPS.
+ *
+ * Nothing here preselects a country: until the user chooses or detects a place,
+ * the app has no location at all.
  */
 export default function LocationPicker({ open, onClose, onSaved }: Props) {
   const { t, lang } = useI18n();
@@ -44,6 +63,11 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
   const [latText, setLatText] = useState('');
   const [lonText, setLonText] = useState('');
   const [manualError, setManualError] = useState<string | null>(null);
+  const [manualBusy, setManualBusy] = useState(false);
+  const [remote, setRemote] = useState<{ status: RemoteState; places: GeoPlace[] }>({
+    status: 'idle',
+    places: [],
+  });
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -53,8 +77,10 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
     setGps('idle');
     setManualOpen(false);
     setManualError(null);
+    setManualBusy(false);
     setLatText('');
     setLonText('');
+    setRemote({ status: 'idle', places: [] });
     const id = window.setTimeout(() => searchRef.current?.focus(), 60);
     return () => window.clearTimeout(id);
   }, [open]);
@@ -71,6 +97,27 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
   const countryMatches = useMemo(() => searchCountries(query, 80), [query]);
   const cityMatches = useMemo(() => searchCities(query, 24), [query]);
 
+  // Live worldwide search, debounced so typing stays responsive.
+  useEffect(() => {
+    if (!open) return;
+    const q = query.trim();
+    if (q.length < 2) {
+      setRemote({ status: 'idle', places: [] });
+      return;
+    }
+    const controller = new AbortController();
+    setRemote((prev) => ({ status: 'loading', places: prev.places }));
+    const timer = window.setTimeout(async () => {
+      const outcome = await searchWorldwide(q, controller.signal);
+      if (controller.signal.aborted) return;
+      setRemote({ status: outcome.online ? 'done' : 'offline', places: outcome.places });
+    }, 420);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query, open]);
+
   if (!open) return null;
 
   const save = (location: UserLocation) => {
@@ -86,20 +133,28 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
     }
     setGps('locating');
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
+      async (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+        // Coordinates are the device's real position; only the place names are looked up.
+        setGps('identifying');
+        const { location } = await resolveLocationFromCoords(
+          latitude,
+          longitude,
+          'gps',
+          accuracy,
+        );
         setGps('idle');
-        save(locationFromCoords(latitude, longitude, 'gps'));
+        save(location);
       },
       (error) => {
         // 1 = permission denied, 2 = position unavailable, 3 = timeout.
         setGps(error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable');
       },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 300_000 },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
     );
   };
 
-  const saveManual = () => {
+  const saveManual = async () => {
     const lat = Number.parseFloat(latText.replace(',', '.'));
     const lon = Number.parseFloat(lonText.replace(',', '.'));
     if (!isValidLatitude(lat)) {
@@ -111,10 +166,14 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
       return;
     }
     setManualError(null);
-    save(locationFromCoords(lat, lon, 'manual'));
+    setManualBusy(true);
+    const { location } = await resolveLocationFromCoords(lat, lon, 'manual');
+    setManualBusy(false);
+    save(location);
   };
 
   const chooseCity = (city: City) => save(locationFromCity(city));
+  const choosePlace = (place: GeoPlace) => save(locationFromPlace(place, 'search'));
 
   const gpsMessage =
     gps === 'denied'
@@ -137,6 +196,9 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
     return [...map.entries()];
   };
 
+  const current = settings.location;
+  const busy = gps === 'locating' || gps === 'identifying';
+
   return (
     <div className="lp-overlay" role="dialog" aria-modal="true" aria-label={t('loc.title')}>
       <div className="lp-sheet">
@@ -155,14 +217,19 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
         </div>
 
         <div className="lp-body">
-          {settings.location && (
+          {current && (
             <div className="lp-current">
               <span className="lp-flag" aria-hidden="true">
-                {settings.location.countryCode ? flagOf(settings.location.countryCode) : '📍'}
+                {current.flag ?? (current.countryCode ? flagOf(current.countryCode) : '📍')}
               </span>
               <div className="lp-current-main">
-                <p className="lp-current-label">{locationLabel(settings.location, lang)}</p>
-                <p className="tiny muted">{locationDetail(settings.location)}</p>
+                <p className="lp-current-label">{locationLabel(current, lang)}</p>
+                <p className="tiny muted">{locationDetail(current)}</p>
+                {current.capital && (
+                  <p className="tiny muted">
+                    {t('loc.capital')}: {lang === 'ar' ? current.capitalAr ?? current.capital : current.capital}
+                  </p>
+                )}
               </div>
               <span className="badge badge-gold">{t('loc.current')}</span>
             </div>
@@ -172,9 +239,14 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
             type="button"
             className="btn btn-primary btn-block"
             onClick={detectGps}
-            disabled={gps === 'locating'}
+            disabled={busy}
+            data-testid="gps-button"
           >
-            {gps === 'locating' ? t('loc.gpsLocating') : `📍 ${t('loc.useGps')}`}
+            {gps === 'locating'
+              ? t('loc.gpsLocating')
+              : gps === 'identifying'
+                ? t('loc.identifying')
+                : `📍 ${t('loc.useGps')}`}
           </button>
 
           {gpsMessage && (
@@ -197,8 +269,49 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
                 setOpenCode(null);
               }}
               autoComplete="off"
+              data-testid="loc-search"
             />
+            <span className="tiny muted">{t('loc.worldwideSearch')}</span>
           </label>
+
+          {remote.status === 'loading' && (
+            <p className="small muted" role="status">
+              {t('loc.searching')}
+            </p>
+          )}
+
+          {remote.status === 'offline' && query.trim().length >= 2 && (
+            <p className="alert alert-info">{t('loc.offlineSearch')}</p>
+          )}
+
+          {remote.places.length > 0 && (
+            <div className="lp-group">
+              <p className="lp-group-title">{t('loc.worldwideResults')}</p>
+              <ul className="lp-list">
+                {remote.places.map((place) => (
+                  <li key={`osm-${place.id}`}>
+                    <button
+                      type="button"
+                      className="lp-item"
+                      onClick={() => choosePlace(place)}
+                      data-testid={`place-${place.countryCode}-${place.name}`}
+                    >
+                      <span className="lp-flag" aria-hidden="true">
+                        {place.flag}
+                      </span>
+                      <span className="lp-name">
+                        {place.name}
+                        <span className="lp-sub">
+                          {[place.region, place.country].filter(Boolean).join(' · ')}
+                        </span>
+                      </span>
+                      <span className="lp-code">{place.countryCode}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {cityMatches.length > 0 && (
             <div className="lp-group">
@@ -260,6 +373,11 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
 
                       {expanded && (
                         <div className="lp-cities">
+                          {country.capital && (
+                            <p className="lp-region-title">
+                              {t('loc.capital')}: {country.capital}
+                            </p>
+                          )}
                           {groupsOf(country).map(([region, cities]) => (
                             <div key={region} className="lp-region">
                               <p className="lp-region-title">{region}</p>
@@ -329,8 +447,13 @@ export default function LocationPicker({ open, onClose, onSaved }: Props) {
                     {manualError}
                   </p>
                 )}
-                <button type="button" className="btn btn-gold btn-block" onClick={saveManual}>
-                  {t('loc.saveManual')}
+                <button
+                  type="button"
+                  className="btn btn-gold btn-block"
+                  onClick={saveManual}
+                  disabled={manualBusy}
+                >
+                  {manualBusy ? t('loc.identifying') : t('loc.saveManual')}
                 </button>
               </div>
             )}

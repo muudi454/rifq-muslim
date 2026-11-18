@@ -1081,3 +1081,33 @@
 .about-row span:last-child { color: var(--ink); font-weight: 600; text-align: end; }
 .about-list { margin: 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 7px; }
 .about-list li { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5; }
+
+/* Location facts: country, capital, city, region, coordinates, time zone */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 12px 0 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface-2, rgba(6, 78, 59, 0.04));
+  border: 1px solid var(--line, rgba(6, 78, 59, 0.12));
+}
+.fact { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fact dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fact dd {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.fact-flag { font-size: 1rem; }
+@media (max-width: 380px) {
+  .facts { grid-template-columns: 1fr; }
+}
