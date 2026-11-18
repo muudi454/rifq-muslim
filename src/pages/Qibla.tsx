@@ -86,7 +86,7 @@ export default function QiblaPage() {
       (pos) => {
         const lat = Number(pos.coords.latitude.toFixed(4));
         const lon = Number(pos.coords.longitude.toFixed(4));
-        updateSettings({ location: locationFromCoords(lat, lon) });
+        updateSettings({ location: locationFromCoords(lat, lon, 'gps') });
         setLocating(false);
         toast(t('common.saved'));
       },
