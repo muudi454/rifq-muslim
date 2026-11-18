@@ -98,6 +98,33 @@ export interface Bookmark {
   createdAt: string;
 }
 
+export type AthanPrayer = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+
+export interface AthanSettings {
+  /** Master switch for Athan notifications. */
+  enabled: boolean;
+  /** Separate switch for each of the five prayers. */
+  prayers: Record<AthanPrayer, boolean>;
+  /** Sound id from ATHAN_SOUNDS in src/lib/athan.ts. */
+  sound: string;
+  /** Sound used for Fajr when fajrSpecial is on. */
+  fajrSound: string;
+  fajrSpecial: boolean;
+  /** Minutes before the prayer for an optional reminder; 0 disables it. */
+  preReminderMinutes: number;
+  volume: number;
+}
+
+export const DEFAULT_ATHAN: AthanSettings = {
+  enabled: false,
+  prayers: { fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true },
+  sound: 'adhan-makkah',
+  fajrSound: 'adhan-madinah',
+  fajrSpecial: true,
+  preReminderMinutes: 0,
+  volume: 0.8,
+};
+
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
   arabicSize: number;
@@ -106,6 +133,7 @@ export interface UserSettings {
   madhab: 'shafii' | 'hanafi';
   location: UserLocation | null;
   vibrate: boolean;
+  athan: AthanSettings;
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -118,6 +146,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   // search or manual coordinates) the first time they need prayer times.
   location: null,
   vibrate: true,
+  athan: DEFAULT_ATHAN,
 };
 
 export interface TasbihSession {
