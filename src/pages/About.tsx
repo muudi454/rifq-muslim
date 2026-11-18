@@ -1,12 +1,8 @@
 import { Link } from '../lib/router';
 import { useI18n } from '../lib/i18n';
 import { COUNTRIES, COUNTRY_COUNT } from '../data/countries';
+import { APP_VERSION, DEVELOPER_CREDIT } from '../lib/credit';
 import { IconBook, IconCompass, IconGlobe, IconMoon } from '../components/Icons';
-
-/** Shown in Settings and on the app information screen. */
-export const APP_VERSION = '1.1.0';
-/** Exact developer credit, rendered verbatim everywhere it appears. */
-export const DEVELOPER_CREDIT = 'Made by Eng Mohamud Yusuf';
 
 const CITY_COUNT = COUNTRIES.reduce((total, country) => total + country.cities.length, 0);
 

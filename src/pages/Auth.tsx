@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useI18n } from '../lib/i18n';
 import { useAuth } from '../lib/auth';
 import { useRouter, Link } from '../lib/router';
+import { DEVELOPER_CREDIT } from '../lib/credit';
 import { IconEye, IconEyeOff, IconLock, IconMail, IconUser } from '../components/Icons';
 
 type Mode = 'signin' | 'signup' | 'forgot' | 'reset';
@@ -102,6 +103,12 @@ export default function AuthPage({
           رِفْق مسلم
         </p>
         <p className="small muted">{t('app.tagline')}</p>
+        <span className="credit">
+          <span className="credit-mark" aria-hidden="true">
+            ✦
+          </span>
+          <span className="credit-gold">{DEVELOPER_CREDIT}</span>
+        </span>
       </div>
 
       <form className="card auth-card" onSubmit={submit} noValidate>
