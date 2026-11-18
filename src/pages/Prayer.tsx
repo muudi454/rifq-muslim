@@ -178,6 +178,9 @@ export default function PrayerPage() {
           <Link to="/qibla" className="btn btn-ghost btn-sm">
             <IconCompass size={16} /> {t('nav.qibla')}
           </Link>
+          <Link to="/notifications" className="btn btn-ghost btn-sm" data-testid="prayer-athan-link">
+            {t('nav.notifications')}
+          </Link>
         </section>
       )}
 

@@ -24,6 +24,7 @@ import NotificationsPage from './pages/Notifications';
 import ContactPage from './pages/Contact';
 import PrivacyPage from './pages/Privacy';
 import AdminPage from './pages/Admin';
+import NotFoundPage from './pages/NotFound';
 import {
   IconBeads,
   IconBook,
@@ -37,12 +38,13 @@ import {
   IconSettings,
   IconUser,
   IconGlobe,
+  IconChevronLeft,
 } from './components/Icons';
 
 function Shell() {
   const { t, lang, setLang } = useI18n();
   const { user } = useAuth();
-  const { path } = useRouter();
+  const { path, back } = useRouter();
   const [menu, setMenu] = useState(false);
   const { settings, toast } = useStore();
   const settingsRef = useRef(settings);
@@ -125,10 +127,17 @@ function Shell() {
     { to: '/notifications', label: t('nav.notifications'), icon: <IconMoon size={20} /> },
     { to: '/contact', label: t('nav.contact'), icon: <IconGlobe size={20} /> },
     { to: '/settings', label: t('nav.settings'), icon: <IconSettings size={20} /> },
+    { to: '/about', label: t('nav.about'), icon: <IconInfo size={20} /> },
     { to: '/privacy', label: t('nav.privacy'), icon: <IconInfo size={20} /> },
     { to: '/admin', label: t('nav.admin'), icon: <IconUser size={20} /> },
     { to: user ? '/profile' : '/auth/signin', label: t('auth.profile'), icon: <IconUser size={20} /> },
   ];
+
+  // Tabs stay highlighted on their own sub-screens (e.g. /quran/2 keeps Quran active).
+  const isActive = (to: string) =>
+    to === '/' ? path === '/' : path === to || path.startsWith(`${to}/`);
+  const moreActive = more.some((item) => isActive(item.to));
+  const tid = (to: string) => (to === '/' ? 'home' : to.slice(1).replace(/\//g, '-'));
 
   const render = () => {
     if (path === '/' || path === '') return <HomePage />;
@@ -151,12 +160,24 @@ function Shell() {
     if (path === '/auth/signup') return <AuthPage mode="signup" />;
     if (path === '/auth/forgot') return <AuthPage mode="forgot" />;
     if (path === '/auth/reset') return <AuthPage mode="reset" />;
-    return <HomePage />;
+    return <NotFoundPage path={path} />;
   };
 
   return (
     <div className="app">
       <header className="app-header">
+        {path !== '/' && (
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={back}
+            aria-label={t('common.back')}
+            title={t('common.back')}
+            data-testid="nav-back"
+          >
+            <IconChevronLeft size={18} />
+          </button>
+        )}
         <Link to="/" className="brand">
           <span className="brand-mark" aria-hidden="true">
             <IconMoon size={20} />
@@ -197,13 +218,21 @@ function Shell() {
           <Link
             key={item.to}
             to={item.to}
-            className={`nav-item ${path === item.to ? 'active' : ''}`}
+            className={`nav-item ${isActive(item.to) ? 'active' : ''}`}
+            data-testid={`nav-${tid(item.to)}`}
+            aria-current={isActive(item.to) ? 'page' : undefined}
           >
             {item.icon}
             <span>{item.label}</span>
           </Link>
         ))}
-        <button className="nav-item" onClick={() => setMenu(true)} aria-expanded={menu}>
+        <button
+          className={`nav-item ${moreActive ? 'active' : ''}`}
+          onClick={() => setMenu(true)}
+          aria-expanded={menu}
+          aria-haspopup="dialog"
+          data-testid="nav-more"
+        >
           <IconSettings size={20} />
           <span>{t('nav.more')}</span>
         </button>
@@ -215,7 +244,13 @@ function Shell() {
             <div className="sheet-handle" />
             <div className="more-grid">
               {more.map((item) => (
-                <Link key={item.to} to={item.to} className="more-item" onClick={() => setMenu(false)}>
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="more-item"
+                  onClick={() => setMenu(false)}
+                  data-testid={`more-${tid(item.to)}`}
+                >
                   {item.icon}
                   <span>{item.label}</span>
                 </Link>

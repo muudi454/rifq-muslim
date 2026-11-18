@@ -829,6 +829,8 @@ p {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .stat-value {

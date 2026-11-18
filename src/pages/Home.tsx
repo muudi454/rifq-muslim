@@ -236,14 +236,14 @@ export default function HomePage() {
       )}
 
       <section className="grid stats-grid">
-        <div className="stat">
+        <Link to="/bookmarks" className="stat" data-testid="stat-bookmarks">
           <p className="stat-value">{bookmarks.length}</p>
           <p className="stat-label">{t('nav.bookmarks')}</p>
-        </div>
-        <div className="stat">
+        </Link>
+        <Link to="/tasbih" className="stat" data-testid="stat-streak">
           <p className="stat-value">{todayCount}</p>
           <p className="stat-label">{t('home.streak')}</p>
-        </div>
+        </Link>
       </section>
     </div>
   );
