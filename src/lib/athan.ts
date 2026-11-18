@@ -10,6 +10,7 @@ import { DEFAULT_ATHAN, type AthanPrayer, type AthanSettings, type UserSettings 
 import { getPrayerTimes } from './prayer';
 import { locationTimeZone } from './location';
 import { api, urlBase64ToUint8Array, getDeviceId } from './api';
+import { showNotification } from './notify';
 
 export interface AthanSound {
   id: string;
@@ -153,31 +154,10 @@ export async function requestAthanPermission(): Promise<PermissionState> {
   }
 }
 
-export async function showSystemNotification(
-  title: string,
-  body: string,
-  tag: string,
-  url = '/notifications',
-): Promise<boolean> {
-  if (athanPermission() !== 'granted') return false;
-  try {
-    const registration = await navigator.serviceWorker?.getRegistration();
-    if (registration?.showNotification) {
-      await registration.showNotification(title, {
-        body,
-        tag,
-        icon: '/icons/icon-192.png',
-        badge: '/icons/icon-192.png',
-        data: { url },
-      });
-      return true;
-    }
-    new Notification(title, { body, tag, icon: '/icons/icon-192.png' });
-    return true;
-  } catch {
-    return false;
-  }
-}
+/*
+ * Notification titles, icons and tap destinations live in lib/notify.ts, so
+ * every alert carries the official RIFQ Muslim name and its category.
+ */
 
 /* -------------------------------------------------------------- schedule */
 
@@ -295,11 +275,11 @@ export function startAthanScheduler(options: {
         if (!alreadyFired(key)) {
           markFired(key);
           pruneFired(dayKey);
-          void showSystemNotification(
-            `${prayerLabel(prayer)} — ${timeText(at)}`,
-            'It is time for prayer. Hayya ala-s-salah.',
-            `athan-${prayer}-${dayKey}`,
-          );
+          void showNotification('athan', {
+            title: `${prayerLabel(prayer)} · ${timeText(at)}`,
+            body: 'It is time for prayer. Hayya ala-s-salah.',
+            tag: `athan-${prayer}-${dayKey}`,
+          });
           void playAthanSound(soundId, athan.volume);
           if (settings.vibrate && typeof navigator.vibrate === 'function') {
             navigator.vibrate([220, 120, 220]);
@@ -317,11 +297,11 @@ export function startAthanScheduler(options: {
           if (!alreadyFired(key)) {
             markFired(key);
             pruneFired(dayKey);
-            void showSystemNotification(
-              `${prayerLabel(prayer)} in ${minutes} minutes`,
-              `${timeText(at)} · Prepare for prayer`,
-              `pre-${prayer}-${dayKey}`,
-            );
+            void showNotification('reminder', {
+              title: `${prayerLabel(prayer)} in ${minutes} min · ${timeText(at)}`,
+              body: 'Prepare for prayer',
+              tag: `pre-${prayer}-${dayKey}`,
+            });
             if (settings.vibrate && typeof navigator.vibrate === 'function') {
               navigator.vibrate(120);
             }

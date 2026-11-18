@@ -14,10 +14,15 @@ import {
   normalizeAthan,
   previewAthanSound,
   requestAthanPermission,
-  showSystemNotification,
   stopAthanPreview,
   type PermissionState,
 } from '../lib/athan';
+import {
+  CATEGORY_CHANNEL,
+  NOTIFICATION_CATEGORIES,
+  categoryTitle,
+  showNotification,
+} from '../lib/notify';
 
 function Switch({
   checked,
@@ -112,11 +117,11 @@ export default function NotificationsPage() {
       await askPermission();
       return;
     }
-    const ok = await showSystemNotification(
-      L('RIFQ Muslim test', 'اختبار رِفْق مسلم'),
-      L('Athan notifications are working on this device.', 'إشعارات الأذان تعمل على هذا الجهاز.'),
-      'rifq-test',
-    );
+    const ok = await showNotification('daily', {
+      title: L('Test notification', 'إشعار تجريبي'),
+      body: L('Notifications are working on this device.', 'الإشعارات تعمل على هذا الجهاز.'),
+      tag: 'rifq-test',
+    });
     toast(ok ? L('Test notification sent', 'تم إرسال إشعار تجريبي') : L('Could not show a notification', 'تعذّر عرض الإشعار'));
   };
 
@@ -379,6 +384,24 @@ export default function NotificationsPage() {
             {pushNote}
           </p>
         )}
+      </section>
+
+      <section className="card">
+        <div className="section-title">{L('Notification categories', 'فئات الإشعارات')}</div>
+        <p className="tiny muted">
+          {L(
+            'Every alert is delivered under the official RIFQ Muslim name, with its own category. Tap an alert to open the matching section.',
+            'يصل كل تنبيه باسم رِفْق مسلم الرسمي وبفئته الخاصة. اضغط التنبيه للانتقال إلى القسم المناسب.',
+          )}
+        </p>
+        <ul className="info-list tiny" data-testid="notif-categories">
+          {NOTIFICATION_CATEGORIES.map((category) => (
+            <li key={category} data-testid={`notif-category-${category}`}>
+              <strong>{categoryTitle(category)}</strong>
+              <span className="muted"> · {CATEGORY_CHANNEL[category]}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="card">
