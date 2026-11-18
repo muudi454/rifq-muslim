@@ -179,6 +179,55 @@ const dict: Record<string, Entry> = {
   ],
   'prayer.passed': ['Passed', 'انتهت'],
   'prayer.now': ['Now', 'الآن'],
+  'prayer.highLatitude': ['High-latitude adjustment', 'تعديل خطوط العرض العالية'],
+  'prayer.highLatitudeHint': [
+    'Used where the sun does not reach the Fajr or Isha angle, such as northern Europe.',
+    'يُستخدم حيث لا تصل الشمس إلى زاوية الفجر أو العشاء، كما في شمال أوروبا.',
+  ],
+  'prayer.active': ['Applied settings', 'الإعدادات المطبّقة'],
+
+  'nav.invite': ['Invite friends', 'ادعُ أصدقاءك'],
+  'invite.title': ['Invite friends', 'ادعُ أصدقاءك'],
+  'invite.sub': [
+    'Share RIFQ Muslim with family and friends — one link, every app they already use.',
+    'شارك رِفْق مسلم مع أهلك وأصدقائك — رابط واحد لكل التطبيقات التي يستخدمونها.',
+  ],
+  'invite.message': [
+    'Join RIFQ Muslim – Your Faith, Your Daily Companion.',
+    'انضم إلى رِفْق مسلم – رفيقك اليومي في عبادتك.',
+  ],
+  'invite.whatsapp': ['WhatsApp', 'واتساب'],
+  'invite.telegram': ['Telegram', 'تلغرام'],
+  'invite.facebook': ['Facebook', 'فيسبوك'],
+  'invite.sms': ['SMS', 'رسالة نصية'],
+  'invite.copy': ['Copy invitation link', 'انسخ رابط الدعوة'],
+  'invite.copied': ['Link copied', 'تم نسخ الرابط'],
+  'invite.copyFailed': ['Could not copy — select the link and copy it manually.', 'تعذّر النسخ — حدد الرابط وانسخه يدويًا.'],
+  'invite.share': ['Share via phone', 'شارك عبر الهاتف'],
+  'invite.shareUnavailable': [
+    'This browser has no share sheet. Use one of the buttons below.',
+    'لا يدعم هذا المتصفح قائمة المشاركة. استخدم أحد الأزرار أدناه.',
+  ],
+  'invite.qr': ['Scan to install', 'امسح للتنزيل'],
+  'invite.qrHint': [
+    'Open the camera on another phone and point it at this code.',
+    'افتح الكاميرا على هاتف آخر ووجّهها إلى هذا الرمز.',
+  ],
+  'invite.linkLabel': ['Invitation link', 'رابط الدعوة'],
+  'invite.configure': ['Invitation link target', 'هدف رابط الدعوة'],
+  'invite.configureHint': [
+    'Points at the live app today. Paste the Google Play link here once RIFQ Muslim is published there — the app never shows a store link before it exists.',
+    'يشير حاليًا إلى التطبيق المباشر. ألصق رابط Google Play هنا بعد نشر رِفْق مسلم — لا يعرض التطبيق رابط متجر قبل وجوده.',
+  ],
+  'invite.save': ['Save link', 'احفظ الرابط'],
+  'invite.reset': ['Use live app URL', 'استخدم رابط التطبيق'],
+  'invite.invalid': ['Enter a full https:// link.', 'أدخل رابطًا كاملاً يبدأ بـ https://'],
+  'invite.saved': ['Invitation link updated', 'تم تحديث رابط الدعوة'],
+  'invite.openLink': ['Open link', 'افتح الرابط'],
+  'invite.noStore': [
+    'Not on Google Play yet — this shares the working web app, which installs from the browser.',
+    'لم يُنشر على Google Play بعد — يشارك هذا رابط التطبيق ويعمل من المتصفح ويمكن تثبيته.',
+  ],
 
   'qibla.title': ['Qibla direction', 'اتجاه القبلة'],
   'qibla.help': [

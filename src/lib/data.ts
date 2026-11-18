@@ -131,6 +131,8 @@ export interface UserSettings {
   showTranslation: boolean;
   method: string;
   madhab: 'shafii' | 'hanafi';
+  /** Cap applied to Fajr/Isha where the sun never reaches the angle. */
+  highLatitude: 'none' | 'middle' | 'seventh' | 'angle';
   location: UserLocation | null;
   vibrate: boolean;
   athan: AthanSettings;
@@ -142,6 +144,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showTranslation: true,
   method: 'MWL',
   madhab: 'shafii',
+  highLatitude: 'seventh',
   // No country is ever assumed. The user chooses their own place (GPS, city
   // search or manual coordinates) the first time they need prayer times.
   location: null,
@@ -150,12 +153,17 @@ export const DEFAULT_SETTINGS: UserSettings = {
 };
 
 /** Merge stored settings with defaults, including the nested Athan block. */
+const HIGH_LATITUDE_VALUES = ['none', 'middle', 'seventh', 'angle'];
 export function mergeSettings(saved: Partial<UserSettings> | null | undefined): UserSettings {
   const base = saved || {};
   const athan = (base as { athan?: Partial<AthanSettings> }).athan;
   return {
     ...DEFAULT_SETTINGS,
     ...base,
+    // Never let a stale or hand-edited value reach the calculator.
+    highLatitude: HIGH_LATITUDE_VALUES.includes(base.highLatitude as string)
+      ? (base.highLatitude as UserSettings['highLatitude'])
+      : DEFAULT_SETTINGS.highLatitude,
     athan: {
       ...DEFAULT_ATHAN,
       ...(athan || {}),
