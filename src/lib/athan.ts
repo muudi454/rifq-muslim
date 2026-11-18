@@ -202,7 +202,7 @@ export function nextAthan(settings: UserSettings, now = new Date()): AthanMoment
   const timeZone = locationTimeZone(settings.location);
   for (let offset = 0; offset < 4; offset += 1) {
     const day = new Date(now.getTime() + offset * 24 * 60 * 60 * 1000);
-    const times = getPrayerTimes(day, settings.location, settings.method, settings.madhab, timeZone)
+    const times = getPrayerTimes(day, { latitude: settings.location.lat, longitude: settings.location.lon }, settings.method, settings.madhab, timeZone)
       .times;
     for (const prayer of ATHAN_PRAYERS) {
       const at = times[prayer];
@@ -275,7 +275,7 @@ export function startAthanScheduler(options: {
     const timeZone = locationTimeZone(settings.location);
     const times = getPrayerTimes(
       now,
-      settings.location,
+      { latitude: settings.location.lat, longitude: settings.location.lon },
       settings.method,
       settings.madhab,
       timeZone,

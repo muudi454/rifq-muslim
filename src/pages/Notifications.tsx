@@ -77,7 +77,7 @@ export default function NotificationsPage() {
   const times = useMemo(() => {
     if (!settings.location) return null;
     try {
-      return getPrayerTimes(now, settings.location, settings.method, settings.madhab, timeZone).times;
+      return getPrayerTimes(now, { latitude: settings.location.lat, longitude: settings.location.lon }, settings.method, settings.madhab, timeZone).times;
     } catch {
       return null;
     }
