@@ -1,0 +1,375 @@
+/* Admin dashboard + shared form feedback, in the RIFQ Muslim palette. */
+
+.form-error,
+.form-success {
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
+.form-error {
+  background: rgba(176, 42, 55, 0.1);
+  border: 1px solid rgba(176, 42, 55, 0.35);
+  color: #8e1f2a;
+}
+
+.form-success {
+  background: rgba(15, 81, 50, 0.1);
+  border: 1px solid rgba(15, 81, 50, 0.3);
+  color: #0b4a2e;
+}
+
+.admin-login {
+  max-width: 460px;
+  margin: 32px auto;
+  padding: 28px;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-crest {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 4px;
+  font-size: 1.5rem;
+  color: #7a5a12;
+  background: linear-gradient(145deg, #f7e7b4, #e6c976);
+  border: 1px solid rgba(184, 143, 45, 0.5);
+}
+
+.admin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-hint {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+  background: rgba(184, 143, 45, 0.08);
+  border-left: 3px solid var(--gold, #b88f2d);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.admin-hint code {
+  font-size: 0.78rem;
+  background: rgba(15, 81, 50, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.admin-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+  scrollbar-width: thin;
+}
+
+.admin-tab {
+  flex: 0 0 auto;
+  border: 1px solid rgba(15, 81, 50, 0.18);
+  background: #fff;
+  color: var(--emerald, #0f5132);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.admin-tab.is-active {
+  background: var(--emerald, #0f5132);
+  border-color: var(--emerald, #0f5132);
+  color: #fff;
+}
+
+.admin-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  padding: 8px 2px 0;
+}
+
+.admin-bar {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.admin-bar-fill {
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--gold, #b88f2d), var(--emerald, #0f5132));
+  min-height: 4px;
+}
+
+.admin-bar-label {
+  font-size: 0.6rem;
+  color: var(--muted, #6b7280);
+}
+
+.admin-status,
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-status li,
+.admin-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(15, 81, 50, 0.08);
+}
+
+.admin-list li:last-child,
+.admin-status li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ok {
+  color: #0b6b3f;
+  font-weight: 600;
+}
+
+.warn {
+  color: #9a6a10;
+  font-weight: 600;
+}
+
+.danger {
+  color: #8e1f2a;
+}
+
+.small {
+  font-size: 0.76rem;
+}
+
+.admin-inline {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 14px;
+  flex-wrap: wrap;
+}
+
+.admin-input {
+  flex: 1 1 220px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 81, 50, 0.25);
+  font: inherit;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 81, 50, 0.12);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  min-width: 620px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(15, 81, 50, 0.08);
+  vertical-align: top;
+}
+
+.admin-table th {
+  background: rgba(15, 81, 50, 0.06);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--emerald, #0f5132);
+}
+
+.admin-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 14px;
+}
+
+.admin-messages {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-message {
+  border: 1px solid rgba(15, 81, 50, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+}
+
+.admin-message-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-message-body {
+  margin: 8px 0;
+  white-space: pre-wrap;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.admin-reply {
+  background: rgba(15, 81, 50, 0.06);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  white-space: pre-wrap;
+}
+
+.admin-reply-form {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-reply-form textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 81, 50, 0.25);
+  padding: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
+.badge {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(184, 143, 45, 0.18);
+  color: #7a5a12;
+  font-weight: 700;
+}
+
+.badge-new {
+  background: rgba(15, 81, 50, 0.16);
+  color: #0b4a2e;
+}
+
+.badge-replied {
+  background: rgba(37, 99, 235, 0.14);
+  color: #1d4ed8;
+}
+
+.badge-archived {
+  background: rgba(107, 114, 128, 0.16);
+  color: #4b5563;
+}
+
+.admin-recipients {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid rgba(15, 81, 50, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+}
+
+.admin-result {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(15, 81, 50, 0.08);
+  border: 1px solid rgba(15, 81, 50, 0.2);
+  font-size: 0.88rem;
+}
+
+.admin-content-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.admin-audit li {
+  display: block;
+}
+
+.admin-audit code {
+  font-size: 0.78rem;
+  background: rgba(15, 81, 50, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.admin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.admin-credit {
+  margin-top: 24px;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .admin-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .admin-login {
+    margin: 12px auto;
+    padding: 20px;
+  }
+}
