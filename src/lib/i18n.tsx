@@ -265,6 +265,115 @@ const dict: Record<string, Entry> = {
   'bookmarks.removed': ['Bookmark removed', 'تم حذف الحفظ'],
 
   'settings.title': ['Settings', 'الإعدادات'],
+
+  // ── Worldwide location ───────────────────────────────────────────
+  'loc.title': ['Choose your location', 'اختر موقعك'],
+  'loc.coverage': [
+    '{countries} countries · {cities} cities and regions · works offline',
+    '{countries} دولة · {cities} مدينة ومنطقة · يعمل دون اتصال',
+  ],
+  'loc.search': ['Search countries, cities or ISO codes', 'ابحث عن دولة أو مدينة أو رمز ISO'],
+  'loc.searchPlaceholder': [
+    'e.g. Somalia, Soomaaliya, SO, Mogadishu',
+    'مثال: الصومال، SO، مقديشو',
+  ],
+  'loc.countries': ['All countries', 'جميع الدول'],
+  'loc.cities': ['Matching cities', 'مدن مطابقة'],
+  'loc.citiesCount': ['cities', 'مدينة'],
+  'loc.useGps': ['Use my current location', 'استخدم موقعي الحالي'],
+  'loc.gpsLocating': ['Detecting your location…', 'جارٍ تحديد موقعك…'],
+  'loc.gpsDenied': [
+    'Location permission was denied. You can still pick your country and city below, or enter coordinates by hand.',
+    'تم رفض إذن الموقع. يمكنك اختيار دولتك ومدينتك أدناه أو إدخال الإحداثيات يدويًا.',
+  ],
+  'loc.gpsUnavailable': [
+    'Your position could not be determined right now. Please choose a country and city, or enter coordinates by hand.',
+    'تعذّر تحديد موقعك حاليًا. يرجى اختيار الدولة والمدينة أو إدخال الإحداثيات يدويًا.',
+  ],
+  'loc.gpsTimeout': [
+    'Locating took too long. Try again, or choose your city manually.',
+    'استغرق تحديد الموقع وقتًا طويلًا. حاول مرة أخرى أو اختر مدينتك يدويًا.',
+  ],
+  'loc.gpsError': [
+    'Location is unavailable on this device. Manual selection works everywhere.',
+    'خدمة الموقع غير متاحة على هذا الجهاز. الاختيار اليدوي يعمل دائمًا.',
+  ],
+  'loc.gpsFallback': [
+    'No problem — every country and city below is available without GPS.',
+    'لا مشكلة — جميع الدول والمدن أدناه متاحة دون الحاجة إلى GPS.',
+  ],
+  'loc.manual': ['Enter coordinates manually', 'إدخال الإحداثيات يدويًا'],
+  'loc.manualHint': [
+    'Latitude between -90 and 90, longitude between -180 and 180.',
+    'خط العرض بين -90 و90، وخط الطول بين -180 و180.',
+  ],
+  'loc.latitude': ['Latitude', 'خط العرض'],
+  'loc.longitude': ['Longitude', 'خط الطول'],
+  'loc.invalidLat': [
+    'Latitude must be a number between -90 and 90.',
+    'يجب أن يكون خط العرض رقمًا بين -90 و90.',
+  ],
+  'loc.invalidLon': [
+    'Longitude must be a number between -180 and 180.',
+    'يجب أن يكون خط الطول رقمًا بين -180 و180.',
+  ],
+  'loc.saveManual': ['Save this location', 'حفظ هذا الموقع'],
+  'loc.current': ['Current', 'الحالي'],
+  'loc.change': ['Change location', 'تغيير الموقع'],
+  'loc.none': ['No location chosen yet', 'لم يتم اختيار موقع بعد'],
+  'loc.noResults': ['No country or city matches that search.', 'لا توجد دولة أو مدينة تطابق البحث.'],
+  'loc.timezone': ['Time zone', 'المنطقة الزمنية'],
+  'loc.choosePrompt': [
+    'Pick your country and city — prayer times and Qibla follow your own coordinates.',
+    'اختر دولتك ومدينتك — أوقات الصلاة والقبلة تتبع إحداثياتك.',
+  ],
+  'loc.close': ['Close', 'إغلاق'],
+  'loc.detected': ['Location detected', 'تم تحديد الموقع'],
+  'loc.worldwide': [
+    'Worldwide coverage, 195 countries with ISO codes, flags and IANA time zones.',
+    'تغطية عالمية: 195 دولة برموز ISO وأعلام ومناطق زمنية.',
+  ],
+
+  // ── Developer credit & app information ──────────────────────────
+  'credit.madeBy': ['Made by Eng Mohamud Yusuf', 'Made by Eng Mohamud Yusuf'],
+  'credit.role': ['Developer of RIFQ Muslim', 'مطوّر رِفْق مسلم'],
+  'about.title': ['About RIFQ Muslim', 'عن رِفْق مسلم'],
+  'about.subtitle': ['A free companion for your daily worship', 'رفيق مجاني لعبادتك اليومية'],
+  'about.developer': ['Developer', 'المطوّر'],
+  'about.version': ['Version', 'الإصدار'],
+  'about.whatTitle': ['What the app does', 'ماذا يقدّم التطبيق'],
+  'about.whatText': [
+    'RIFQ Muslim brings the Quran, prayer times, Qibla, tasbih, duas, hadith and the Hijri calendar into one calm, installable app.',
+    'يجمع رِفْق مسلم القرآن وأوقات الصلاة والقبلة والمسبحة والأدعية والأحاديث والتقويم الهجري في تطبيق واحد هادئ وقابل للتثبيت.',
+  ],
+  'about.locationTitle': ['Worldwide location', 'الموقع حول العالم'],
+  'about.locationText': [
+    'All 195 countries with ISO 3166-1 codes, flags, cities and regions are bundled in the app. Choose a place by search, use GPS, or enter coordinates manually — prayer times and Qibla are computed from those coordinates in the place\'s own time zone.',
+    'جميع الدول الـ195 مع رموز ISO 3166-1 والأعلام والمدن والمناطق مضمنة داخل التطبيق. اختر مكانك بالبحث أو عبر GPS أو بإدخال الإحداثيات — وتُحسب أوقات الصلاة والقبلة من تلك الإحداثيات بتوقيت المكان نفسه.',
+  ],
+  'about.dataTitle': ['Sources', 'المصادر'],
+  'about.dataQuran': [
+    'Quran: Tanzil Uthmani text with the Sahih International translation.',
+    'القرآن: نص مصحف تنزيل العثماني مع ترجمة صحيح إنترناشونال.',
+  ],
+  'about.dataHadith': [
+    'Hadith: Hadeeth Encyclopedia (hadeethenc.com) with reference and grade.',
+    'الحديث: موسوعة الحديث (hadeethenc.com) مع المرجع والدرجة.',
+  ],
+  'about.dataPrayer': [
+    'Prayer times: computed on-device from solar positions, with several calculation methods and Asr madhhabs.',
+    'أوقات الصلاة: تُحسب على الجهاز من مواقع الشمس، مع عدة طرق حساب ومذاهب للعصر.',
+  ],
+  'about.dataLocation': [
+    'Location and time zones: bundled country/city dataset and the device IANA time-zone database. No paid API is used.',
+    'الموقع والمناطق الزمنية: بيانات الدول والمدن المضمنة وقاعدة المناطق الزمنية في الجهاز. لا تُستخدم أي واجهة مدفوعة.',
+  ],
+  'about.freeTitle': ['Always free', 'مجاني دائمًا'],
+  'about.freeText': [
+    'No ads, no subscriptions and no paid tiers. Accounts and bookmarks stay yours.',
+    'لا إعلانات ولا اشتراكات ولا خطط مدفوعة. حسابك ومحفوظاتك تبقى لك.',
+  ],
+  'about.thanks': ['Jazakum Allahu khayran for using RIFQ Muslim.', 'جزاكم الله خيرًا لاستخدامكم رِفْق مسلم.'],
   'settings.language': ['Language', 'اللغة'],
   'settings.english': ['English', 'الإنجليزية'],
   'settings.arabic': ['Arabic', 'العربية'],
