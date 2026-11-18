@@ -4,7 +4,7 @@ import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import { useAuth } from '../lib/auth';
 import { useInstall } from '../lib/install';
-import { METHODS } from '../lib/prayer';
+import { HIGH_LATITUDE_LABELS, HIGH_LATITUDE_RULES, METHODS } from '../lib/prayer';
 import { locationDetail } from '../lib/location';
 import LocationFacts from '../components/LocationFacts';
 import { DEFAULT_SETTINGS } from '../lib/data';

@@ -1,5 +1,5 @@
 {
-  "name": "RIFQ Muslim · رِفْق مسلم",
+  "name": "RIFQ Muslim",
   "short_name": "RIFQ Muslim",
   "description": "Quran, prayer times, Qibla, Tasbih, Duas, authentic Hadith and the Hijri calendar in one calm Islamic companion app.",
   "id": "/",
@@ -13,6 +13,7 @@
   "lang": "en",
   "dir": "ltr",
   "categories": ["lifestyle", "education", "reference"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -25,6 +26,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-maskable-512.png",
@@ -50,6 +57,12 @@
       "name": "Tasbih",
       "short_name": "Tasbih",
       "url": "/tasbih",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Invite friends",
+      "short_name": "Invite",
+      "url": "/invite",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

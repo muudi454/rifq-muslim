@@ -985,7 +985,26 @@ if (!fs.existsSync(DIST)) {
       },
     }),
   );
-  app.use(express.static(DIST, { index: false, maxAge: '1h' }));
+  app.use(
+    express.static(DIST, {
+      index: false,
+      maxAge: '1h',
+      setHeaders: (res, filePath) => {
+        const name = path.basename(filePath);
+        // Chrome re-reads the manifest and service worker when it mints the
+        // installed WebAPK, so neither may be served from a stale cache. The
+        // manifest also needs its own MIME type for the identity to be accepted.
+        if (name.endsWith('.webmanifest')) {
+          res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+        if (name === 'sw.js') {
+          res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      },
+    }),
+  );
 
   app.get('/', (_req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
