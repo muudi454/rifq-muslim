@@ -103,6 +103,18 @@ export default function ProfilePage() {
         </p>
       </section>
 
+      <section className="card invite-cta">
+        <div className="row">
+          <div className="row-main">
+            <h2 className="row-title">{t('invite.ctaProfile')}</h2>
+            <p className="row-sub">{t('invite.ctaProfileSub')}</p>
+          </div>
+        </div>
+        <Link to="/invite" className="btn btn-primary btn-sm" data-testid="profile-invite">
+          {t('invite.ctaProfile')}
+        </Link>
+      </section>
+
       {error && <p className="alert alert-error">{error}</p>}
 
       <section className="card">

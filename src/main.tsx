@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { trackInviteOpen } from './lib/inviteTracking';
 import './index.css';
 import './extra.css';
 import './admin.css';
@@ -28,6 +29,9 @@ createRoot(document.getElementById('root')!).render(
 window.requestAnimationFrame(() => window.requestAnimationFrame(dismissLaunchSplash));
 // Failsafe: never leave the splash covering a page that failed to mount.
 window.setTimeout(dismissLaunchSplash, 5000);
+
+// Count this visit if it arrived from an invitation link (opt-in only).
+trackInviteOpen();
 
 // Register the service worker for offline support and installability.
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

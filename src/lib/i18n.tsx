@@ -228,6 +228,26 @@ const dict: Record<string, Entry> = {
     'Not on Google Play yet — this shares the working web app, which installs from the browser.',
     'لم يُنشر على Google Play بعد — يشارك هذا رابط التطبيق ويعمل من المتصفح ويمكن تثبيته.',
   ],
+  'invite.ctaHome': ['Invite friends to RIFQ Muslim', 'ادعُ أصدقاءك إلى رِفْق مسلم'],
+  'invite.ctaHomeSub': [
+    'Share the app on WhatsApp, Telegram, Facebook or SMS — or show them the QR code.',
+    'شارك التطبيق على واتساب أو تيليجرام أو فيسبوك أو رسالة — أو اعرض رمز QR.',
+  ],
+  'invite.ctaProfile': ['Share RIFQ Muslim', 'شارك رِفْق مسلم'],
+  'invite.ctaProfileSub': [
+    'One link your family and friends can open on any phone.',
+    'رابط واحد يفتحه أهلك وأصدقاؤك على أي هاتف.',
+  ],
+  'invite.privacyTitle': ['Invitation counting', 'عدّ الدعوات'],
+  'invite.privacyBody': [
+    'Off by default. If you turn it on, the app sends an anonymous counter — one for a share, one for an invitation link opened. No names, contacts, message contents or device identifiers are stored, and you can switch it off at any time.',
+    'متوقف افتراضيًا. إذا فعّلته يرسل التطبيق عدّادًا مجهولًا — واحد لكل مشاركة وواحد لكل رابط دعوة يُفتح. لا تُحفظ أسماء ولا جهات اتصال ولا نصوص رسائل ولا معرّفات أجهزة، ويمكنك إيقافه في أي وقت.',
+  ],
+  'invite.privacyToggle': [
+    'Allow anonymous invitation counts',
+    'السماح بعدّ الدعوات بشكل مجهول',
+  ],
+  'invite.statsLabel': ['Invitations shared from this device', 'دعوات تمت مشاركتها من هذا الجهاز'],
 
   'qibla.title': ['Qibla direction', 'اتجاه القبلة'],
   'qibla.help': [

@@ -182,6 +182,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="card invite-cta">
+        <div className="row">
+          <div className="row-main">
+            <h2 className="row-title">{t('invite.ctaHome')}</h2>
+            <p className="row-sub">{t('invite.ctaHomeSub')}</p>
+          </div>
+        </div>
+        <Link to="/invite" className="btn btn-primary btn-sm" data-testid="home-invite">
+          {t('invite.ctaHome')}
+        </Link>
+      </section>
+
       <section className="card">
         <div className="row">
           <div className="row-main">

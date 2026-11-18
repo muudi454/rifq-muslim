@@ -52,6 +52,14 @@ export default function PrivacyPage() {
           )}
         </p>
 
+        <h2>{L('Invitation links', 'روابط الدعوة')}</h2>
+        <p>
+          {L(
+            'Sharing RIFQ Muslim uses your phone\u2019s share sheet or the app you pick. Invitation counting is off by default; if you enable it on the Invite friends screen, the app sends only an anonymous counter for shares and opened invitation links. No names, contacts, message contents or device identifiers are stored, and you can turn it off at any time.',
+            'تتم مشاركة رِفْق مسلم عبر قائمة المشاركة في هاتفك أو التطبيق الذي تختاره. عدّ الدعوات متوقف افتراضيًا؛ وإذا فعّلته من شاشة ادعُ أصدقاءك يرسل التطبيق عدّادًا مجهولًا للمشاركات وروابط الدعوة المفتوحة فقط. لا تُحفظ أسماء ولا جهات اتصال ولا نصوص رسائل ولا معرّفات أجهزة، ويمكنك إيقافه في أي وقت.',
+          )}
+        </p>
+
         <h2>{L('No ads, no tracking', 'لا إعلانات ولا تتبّع')}</h2>
         <p>
           {L(
