@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
-import { IconRefresh, IconTrash } from '../components/Icons';
+import { IconRefresh } from '../components/Icons';
 
 const DHIKR = [
   { key: 'tasbih.subhanallah', arabic: 'سُبْحَانَ اللهِ' },

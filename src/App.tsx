@@ -17,6 +17,8 @@ import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
 import AuthPage from './pages/Auth';
 import {
+  IconBeads,
+  IconBook,
   IconBookmark,
   IconCalendar,
   IconCompass,
@@ -24,9 +26,7 @@ import {
   IconHome,
   IconInfo,
   IconMoon,
-  IconQuran,
   IconSettings,
-  IconTasbih,
   IconUser,
   IconGlobe,
 } from './components/Icons';
@@ -42,9 +42,9 @@ function Shell() {
 
   const primary = [
     { to: '/', label: t('nav.home'), icon: <IconHome size={20} /> },
-    { to: '/quran', label: t('nav.quran'), icon: <IconQuran size={20} /> },
+    { to: '/quran', label: t('nav.quran'), icon: <IconBook size={20} /> },
     { to: '/prayer', label: t('nav.prayer'), icon: <IconCompass size={20} /> },
-    { to: '/tasbih', label: t('nav.tasbih'), icon: <IconTasbih size={20} /> },
+    { to: '/tasbih', label: t('nav.tasbih'), icon: <IconBeads size={20} /> },
   ];
 
   const more = [

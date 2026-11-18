@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { useI18n } from '../lib/i18n';
 import { useInstall } from '../lib/install';
 
 export function InstallBanner() {
   const { t } = useI18n();
   const { available, installed, promptInstall, ios } = useInstall();
-  const [dismissed, setDismissed] = React.useState(() => {
+  const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem('rifq.install.dismissed') === '1';
     } catch {
