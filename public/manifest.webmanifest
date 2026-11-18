@@ -1,0 +1,56 @@
+{
+  "name": "RIFQ Muslim · رِفْق مسلم",
+  "short_name": "RIFQ Muslim",
+  "description": "Quran, prayer times, Qibla, Tasbih, Duas, authentic Hadith and the Hijri calendar in one calm Islamic companion app.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#fbf9f3",
+  "theme_color": "#065f46",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["lifestyle", "education", "reference"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quran",
+      "short_name": "Quran",
+      "url": "/quran",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Prayer times",
+      "short_name": "Prayer",
+      "url": "/prayer",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tasbih",
+      "short_name": "Tasbih",
+      "url": "/tasbih",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

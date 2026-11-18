@@ -88,7 +88,7 @@ export default function CalendarPage() {
               )}
             </p>
           </div>
-          <button className="icon-btn" onClick={() => shift(1)} aria-label={t('common.next' in {} ? 'common.next' : 'common.viewAll')}>
+          <button className="icon-btn" onClick={() => shift(1)} aria-label={t('common.next')}>
             <IconChevronRight size={18} />
           </button>
         </div>
