@@ -3,6 +3,8 @@ import { Link } from '../lib/router';
 import { useI18n } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import {
+  HIGH_LATITUDE_LABELS,
+  HIGH_LATITUDE_RULES,
   METHODS,
   PRAYER_ORDER,
   formatCountdown,
@@ -37,9 +39,11 @@ export default function PrayerPage() {
 
   const today = useMemo(
     () =>
-      coords ? getPrayerTimes(now, coords, settings.method, settings.madhab, timeZone) : null,
+      coords
+        ? getPrayerTimes(now, coords, settings.method, settings.madhab, timeZone, settings.highLatitude)
+        : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lat, lon, settings.method, settings.madhab, timeZone, now.toDateString()],
+    [lat, lon, settings.method, settings.madhab, settings.highLatitude, timeZone, now.toDateString()],
   );
 
   const upcoming = today ? nextPrayer(today.times, now) : null;
@@ -51,11 +55,11 @@ export default function PrayerPage() {
       date.setDate(date.getDate() + i);
       return {
         date,
-        times: getPrayerTimes(date, coords, settings.method, settings.madhab, timeZone).times,
+        times: getPrayerTimes(date, coords, settings.method, settings.madhab, timeZone, settings.highLatitude).times,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lon, settings.method, settings.madhab, timeZone, now.toDateString()]);
+  }, [lat, lon, settings.method, settings.madhab, settings.highLatitude, timeZone, now.toDateString()]);
 
   const methodDef = METHODS.find((m) => m.id === settings.method) ?? METHODS[0];
 
@@ -125,6 +129,7 @@ export default function PrayerPage() {
           <span>{t('prayer.method')}</span>
           <select
             className="select"
+            data-testid="prayer-method"
             value={settings.method}
             onChange={(e) => updateSettings({ method: e.target.value })}
           >
@@ -153,6 +158,33 @@ export default function PrayerPage() {
             </button>
           </div>
         </div>
+
+        <label className="field">
+          <span>{t('prayer.highLatitude')}</span>
+          <select
+            className="select"
+            data-testid="prayer-highlat"
+            value={settings.highLatitude}
+            onChange={(e) =>
+              updateSettings({ highLatitude: e.target.value as typeof settings.highLatitude })
+            }
+          >
+            {HIGH_LATITUDE_RULES.map((rule) => (
+              <option key={rule} value={rule}>
+                {HIGH_LATITUDE_LABELS[rule][lang]}
+              </option>
+            ))}
+          </select>
+          <p className="row-sub" style={{ marginTop: 6 }}>
+            {t('prayer.highLatitudeHint')}
+          </p>
+        </label>
+
+        <p className="small muted" data-testid="prayer-applied" style={{ marginTop: 12 }}>
+          {t('prayer.active')}: {methodDef.name[lang]} ·{' '}
+          {t(settings.madhab === 'hanafi' ? 'prayer.hanafi' : 'prayer.shafii')} ·{' '}
+          {HIGH_LATITUDE_LABELS[settings.highLatitude][lang]}
+        </p>
       </section>
 
       {today && (

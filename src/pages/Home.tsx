@@ -77,9 +77,10 @@ export default function HomePage() {
       settings.method,
       settings.madhab,
       timeZone,
+      settings.highLatitude,
     );
     return { times: times.times, next: nextPrayer(times.times, now) };
-  }, [now, settings.location, settings.method, settings.madhab, timeZone]);
+  }, [now, settings.location, settings.method, settings.madhab, settings.highLatitude, timeZone]);
 
   const dailyAyah = useMemo(() => {
     if (!quran) return null;
